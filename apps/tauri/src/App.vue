@@ -1,6 +1,13 @@
 <template>
   <n-config-provider :theme="naiveTheme">
-    <div class="app-shell">
+    <n-message-provider>
+      <AppContent />
+    </n-message-provider>
+  </n-config-provider>
+</template>
+
+<template v-if="false">
+  <div class="app-shell">
       <!-- ============================================
            LEFT SIDEBAR - Control Panel
            ============================================ -->
@@ -18,17 +25,6 @@
 
         <!-- Control Sections -->
         <div class="app-shell__controls">
-          <!-- Primary Actions -->
-          <div class="control-section">
-            <div class="control-section__label">{{ t.operations }}</div>
-            <button class="btn-action btn-action--primary" @click="handleSanitize">
-              {{ t.executeSanitize }}
-            </button>
-            <button class="btn-action" @click="handleLoadFile" style="margin-top: 12px">
-              {{ t.loadFile }}
-            </button>
-          </div>
-
           <!-- Configuration Toggle -->
           <div class="control-section">
             <div class="control-section__label">{{ t.configuration }}</div>
@@ -111,6 +107,14 @@
           <div class="panel">
             <div class="panel__header">
               <h2 class="panel__title">{{ t.originalText }}</h2>
+              <div class="panel__header-actions">
+                <button class="btn-action" @click="handleLoadFile" style="width: auto; white-space: nowrap;">
+                  {{ t.loadFile }}
+                </button>
+                <button class="btn-action btn-action--primary" @click="handleSanitize" style="width: auto; white-space: nowrap;">
+                  {{ t.executeSanitize }}
+                </button>
+              </div>
             </div>
             <div class="panel__body">
               <MainPanel
@@ -127,6 +131,7 @@
           <div class="panel">
             <div class="panel__header">
               <h2 class="panel__title">{{ t.sanitizedOutput }}</h2>
+              <div class="panel__header-actions"></div>
             </div>
             <div class="panel__body">
               <MainPanel
@@ -217,19 +222,29 @@
           />
         </div>
       </footer>
-    </div>
+      </div>
+    </n-message-provider>
   </n-config-provider>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
-import { darkTheme, type GlobalTheme } from "naive-ui";
+import { darkTheme, useMessage, type GlobalTheme } from "naive-ui";
 import { invoke } from "@tauri-apps/api/core";
 import MainPanel from "./components/MainPanel.vue";
 import ConfigPanel from "./components/ConfigPanel.vue";
 import FindingsList from "./components/FindingsList.vue";
 import ReportView from "./components/ReportView.vue";
 import type { Config, Finding, Response } from "./types";
+
+let message: ReturnType<typeof useMessage> | null = null;
+
+const getMessage = () => {
+  if (!message) {
+    message = useMessage();
+  }
+  return message;
+};
 
 // 语言配置
 type Language = "zh" | "en";
@@ -400,7 +415,7 @@ const setConfig = (newConfig: Config) => {
 
 const handleSanitize = async () => {
   if (!originalText.value.trim()) {
-    alert("Please input text to sanitize");
+    getMessage().warning(lang.value === "zh" ? "请输入要净化的文本" : "Please input text to sanitize");
     return;
   }
 
@@ -422,7 +437,7 @@ const handleSanitize = async () => {
     findings.value = result.findings;
   } catch (error) {
     console.error("Sanitization failed:", error);
-    alert(`Sanitization failed: ${error}`);
+    getMessage().error(lang.value === "zh" ? `净化失败: ${error}` : `Sanitization failed: ${error}`);
   }
 };
 
@@ -432,9 +447,11 @@ const handleLoadFile = async () => {
     if (filePath) {
       const content = await invoke<string>("read_file", { path: filePath });
       originalText.value = content;
+      getMessage().success(lang.value === "zh" ? "文件加载成功" : "File loaded successfully");
     }
   } catch (error) {
     console.error("Failed to load file:", error);
+    getMessage().error(lang.value === "zh" ? `文件加载失败: ${error}` : `Failed to load file: ${error}`);
   }
 };
 </script>

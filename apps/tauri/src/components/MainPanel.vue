@@ -86,7 +86,10 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useMessage } from "naive-ui";
 import type { Finding } from "../types";
+
+const message = useMessage();
 
 interface Props {
   title: string;
@@ -149,7 +152,12 @@ const handleInput = (e: Event) => {
   props.onChange?.(target.value);
 };
 
-const handleCopy = () => {
-  navigator.clipboard.writeText(props.text);
+const handleCopy = async () => {
+  try {
+    await navigator.clipboard.writeText(props.text);
+    message.success("复制成功");
+  } catch (error) {
+    message.error("复制失败");
+  }
 };
 </script>

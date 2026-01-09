@@ -602,7 +602,7 @@ body.theme-dark .app-shell__title {
 /* Action Buttons */
 .btn-action {
   width: 100%;
-  padding: calc(var(--unit) * 2.5);
+  padding: calc(var(--unit) * 1.5) calc(var(--unit) * 2.5);
   background: var(--color-bg-tertiary);
   border: 3px solid var(--color-border);
   color: var(--color-text-primary);
@@ -848,6 +848,16 @@ body.theme-dark .app-shell__title {
   border-bottom: 3px solid var(--color-border-light);
   background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, var(--color-bg-secondary) 100%);
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+}
+
+.panel__header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .panel__header::after {
@@ -1353,14 +1363,17 @@ body.style-horizon .app-shell__logo-mark:hover {
 
 /* Horizon: Primary Button with Gradient */
 body.style-horizon .btn-action--primary {
-  background: var(--gradient-brand);
-  border: none;
-  box-shadow: 0 4px 14px rgba(67, 24, 255, 0.3);
+  background: var(--gradient-brand) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(67, 24, 255, 0.3) !important;
   animation: none;
 }
 
 body.style-horizon .btn-action--primary:hover {
-  box-shadow: 0 8px 24px rgba(67, 24, 255, 0.4);
+  background: var(--gradient-brand) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 24px rgba(67, 24, 255, 0.4) !important;
   transform: translateY(-3px);
 }
 
