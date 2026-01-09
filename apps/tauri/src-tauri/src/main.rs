@@ -49,9 +49,9 @@ struct Stats {
 }
 
 #[tauri::command]
-async fn sanitize(request: Request) -> Result<Response, String> {
+async fn sanitize(app: tauri::AppHandle, request: Request) -> Result<Response, String> {
     // 获取 Go sidecar 路径
-    let exe_path = get_sidecar_path()?;
+    let exe_path = get_sidecar_path(&app)?;
 
     // 准备请求 JSON
     let request_json = serde_json::to_string(&request)
@@ -104,16 +104,29 @@ async fn read_file(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("读取文件失败: {}", e))
 }
 
-fn get_sidecar_path() -> Result<PathBuf, String> {
+fn get_sidecar_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    // 生产环境：使用 Tauri 的路径解析器获取 externalBin
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        #[cfg(target_os = "windows")]
+        let exe_name = "prompt-sanitizer.exe";
+        #[cfg(not(target_os = "windows"))]
+        let exe_name = "prompt-sanitizer";
+        
+        let exe_path = resource_dir.join(exe_name);
+        if exe_path.exists() {
+            return Ok(exe_path);
+        }
+    }
+
     // 开发环境：尝试从多个可能的位置查找
     let possible_paths: Vec<PathBuf> = vec![
         // 开发环境：在项目根目录
         PathBuf::from("bin/prompt-sanitizer.exe"),
         PathBuf::from("bin/prompt-sanitizer"),
+        PathBuf::from("src-tauri/bin/prompt-sanitizer.exe"),
+        PathBuf::from("src-tauri/bin/prompt-sanitizer"),
         PathBuf::from("../../engine/go/cmd/main.exe"),
         PathBuf::from("../../engine/go/cmd/prompt-sanitizer.exe"),
-        // 生产环境：在资源目录（Tauri 2 中需要不同的方式）
-        // 暂时跳过，后续可以通过环境变量或配置指定
     ];
 
     for path in possible_paths {
