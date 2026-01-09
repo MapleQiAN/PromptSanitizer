@@ -2,8 +2,8 @@
   <div style="display: flex; flex-direction: column; height: 100%;">
     <!-- Badge/Status -->
     <div v-if="highlightMode" style="margin-bottom: 16px;">
-      <span class="badge">
-        ⚠ Highlight Mode Active
+      <span class="badge" style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); color: var(--color-text-inverse); border: none;">
+        ✨ Highlight Mode Active
       </span>
     </div>
 
@@ -13,9 +13,10 @@
       class="highlight-view"
       style="
         flex: 1;
-        padding: 20px;
-        background: var(--color-bg-tertiary);
-        border: var(--border-thin) solid var(--color-border);
+        padding: 24px;
+        background: var(--color-bg-secondary);
+        border: 3px solid var(--color-border);
+        border-radius: var(--radius-md);
         overflow: auto;
       "
     >
@@ -50,32 +51,34 @@
       style="
         margin-top: 16px;
         padding-top: 16px;
-        border-top: var(--border-thin) solid var(--color-border);
+        border-top: 3px solid var(--color-border-light);
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
         gap: 12px;
       "
     >
+      <div
+        style="
+          font-family: var(--font-display);
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--color-text-secondary);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        "
+      >
+        <span style="font-size: 16px;">📝</span>
+        <span>{{ text.length }} chars</span>
+      </div>
       <button
         class="btn-action"
         @click="handleCopy"
-        style="padding: 8px 20px; font-size: 11px;"
+        style="padding: 10px 24px; font-size: 14px; width: auto;"
       >
         📋 Copy {{ readOnly ? 'Output' : 'Text' }}
       </button>
-      <div
-        v-if="text"
-        style="
-          font-family: var(--font-mono);
-          font-size: 10px;
-          color: var(--color-text-muted);
-          display: flex;
-          align-items: center;
-          padding: 0 8px;
-        "
-      >
-        {{ text.length }} chars
-      </div>
     </div>
   </div>
 </template>

@@ -84,16 +84,17 @@
         style="
           width: 100%;
           min-height: 80px;
-          padding: 12px;
-          background: var(--color-bg-tertiary);
-          border: var(--border-thin) solid var(--color-border);
+          padding: 16px;
+          background: var(--color-bg-secondary);
+          border: 3px solid var(--color-border);
+          border-radius: var(--radius-md);
           color: var(--color-text-primary);
           font-family: var(--font-mono);
-          font-size: 12px;
-          line-height: 1.5;
+          font-size: 13px;
+          line-height: 1.6;
           resize: vertical;
           outline: none;
-          clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+          transition: all 0.3s var(--ease-smooth);
         "
       />
     </div>

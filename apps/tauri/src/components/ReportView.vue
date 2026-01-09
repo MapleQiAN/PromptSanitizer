@@ -3,47 +3,51 @@
     <!-- Risk Score Hero -->
     <div
       style="
-        padding: 32px;
-        background: var(--color-bg-tertiary);
-        border: var(--border-thick) solid var(--color-border-heavy);
+        padding: 40px;
+        background: linear-gradient(135deg, var(--color-bg-tertiary), var(--color-bg-secondary));
+        border: 4px solid;
+        border-radius: var(--radius-lg);
         position: relative;
         overflow: hidden;
+        box-shadow: var(--shadow-lg);
       "
       :style="{ borderColor: riskInfo.color }"
     >
-      <!-- Diagonal decoration -->
+      <!-- Cute bubble decoration -->
       <div
         style="
           position: absolute;
-          top: -50%;
-          right: -10%;
-          width: 300px;
-          height: 300px;
-          opacity: 0.05;
-          transform: rotate(45deg);
+          top: -80px;
+          right: -80px;
+          width: 200px;
+          height: 200px;
+          opacity: 0.08;
+          border-radius: var(--radius-full);
+          animation: bubble-float-1 6s ease-in-out infinite;
         "
         :style="{ background: riskInfo.color }"
       />
       
-      <div style="display: flex; align-items: center; gap: 32px; position: relative; z-index: 1;">
+      <div style="display: flex; align-items: center; gap: 40px; position: relative; z-index: 1;">
         <!-- Risk Score -->
         <div
           style="
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: var(--font-display);
-            font-size: 56px;
-            font-weight: 800;
-            border: var(--border-thick) solid;
-            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+            font-size: 64px;
+            font-weight: 700;
+            border: 5px solid;
+            border-radius: var(--radius-lg);
+            animation: pulse-glow 3s ease-in-out infinite;
           "
           :style="{
             color: riskInfo.color,
             borderColor: riskInfo.color,
-            boxShadow: `0 0 40px ${riskInfo.color}40`,
+            boxShadow: `0 8px 32px ${riskInfo.color}40`,
           }"
         >
           {{ response.risk_score }}
@@ -53,17 +57,16 @@
         <div style="flex: 1;">
           <h2
             style="
-              font-size: 32px;
-              font-weight: 800;
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-              margin-bottom: 8px;
+              font-size: 36px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              font-family: var(--font-display);
             "
             :style="{ color: riskInfo.color }"
           >
             {{ riskInfo.label }}
           </h2>
-          <p style="color: var(--color-text-secondary); font-size: 13px; line-height: 1.6;">
+          <p style="color: var(--color-text-secondary); font-size: 15px; line-height: 1.7;">
             Comprehensive risk assessment based on detected patterns, sensitivity levels, and potential exposure vectors.
           </p>
         </div>
@@ -71,67 +74,79 @@
     </div>
 
     <!-- Statistics Grid -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
       <div
         style="
-          padding: 20px;
+          padding: 28px;
           background: var(--color-bg-tertiary);
-          border: var(--border-thin) solid var(--color-border);
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+          border: 3px solid var(--color-border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-sm);
+          transition: all 0.3s var(--ease-smooth);
         "
+        class="stat-card"
       >
-        <div style="font-size: 36px; font-weight: 800; color: var(--color-text-primary); font-family: var(--font-mono);">
+        <div style="font-size: 48px; font-weight: 700; color: var(--color-text-primary); font-family: var(--font-display);">
           {{ response.stats.total_findings }}
         </div>
-        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-top: 10px; font-weight: 600; font-family: var(--font-display);">
           Total Findings
         </div>
       </div>
 
       <div
         style="
-          padding: 20px;
+          padding: 28px;
           background: var(--color-bg-tertiary);
-          border: var(--border-thin) solid var(--color-border);
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+          border: 3px solid var(--color-border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-sm);
+          transition: all 0.3s var(--ease-smooth);
         "
+        class="stat-card"
       >
-        <div style="font-size: 36px; font-weight: 800; color: var(--color-risk-high); font-family: var(--font-mono);">
+        <div style="font-size: 48px; font-weight: 700; color: var(--color-risk-high); font-family: var(--font-display);">
           {{ response.stats.high_risk_count }}
         </div>
-        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-top: 10px; font-weight: 600; font-family: var(--font-display);">
           High Risk
         </div>
       </div>
 
       <div
         style="
-          padding: 20px;
+          padding: 28px;
           background: var(--color-bg-tertiary);
-          border: var(--border-thin) solid var(--color-border);
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+          border: 3px solid var(--color-border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-sm);
+          transition: all 0.3s var(--ease-smooth);
         "
+        class="stat-card"
       >
-        <div style="font-size: 36px; font-weight: 800; color: var(--color-risk-medium); font-family: var(--font-mono);">
+        <div style="font-size: 48px; font-weight: 700; color: var(--color-risk-medium); font-family: var(--font-display);">
           {{ response.stats.medium_risk_count }}
         </div>
-        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-top: 10px; font-weight: 600; font-family: var(--font-display);">
           Medium Risk
         </div>
       </div>
 
       <div
         style="
-          padding: 20px;
+          padding: 28px;
           background: var(--color-bg-tertiary);
-          border: var(--border-thin) solid var(--color-border);
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+          border: 3px solid var(--color-border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-sm);
+          transition: all 0.3s var(--ease-smooth);
         "
+        class="stat-card"
       >
-        <div style="font-size: 36px; font-weight: 800; color: var(--color-risk-low); font-family: var(--font-mono);">
+        <div style="font-size: 48px; font-weight: 700; color: var(--color-risk-low); font-family: var(--font-display);">
           {{ response.stats.low_risk_count }}
         </div>
-        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-top: 10px; font-weight: 600; font-family: var(--font-display);">
           Low Risk
         </div>
       </div>
@@ -140,24 +155,29 @@
     <!-- Category Breakdown -->
     <div
       style="
-        padding: 24px;
+        padding: 32px;
         background: var(--color-bg-tertiary);
-        border: var(--border-normal) solid var(--color-border);
+        border: 3px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
       "
     >
       <h3
         style="
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          color: var(--color-text-secondary);
-          margin-bottom: 20px;
-          font-weight: 800;
+          font-size: 18px;
+          color: var(--color-text-primary);
+          margin-bottom: 24px;
+          font-weight: 700;
+          font-family: var(--font-display);
+          display: flex;
+          align-items: center;
+          gap: 10px;
         "
       >
-        ◆ Category Distribution
+        <span style="font-size: 20px;">📊</span>
+        <span>Category Distribution</span>
       </h3>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
         <div
           v-for="[cat, count] in categoryEntries"
           :key="cat"
@@ -165,18 +185,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background: var(--color-bg-primary);
-            border: var(--border-thin) solid var(--color-border);
-            font-family: var(--font-mono);
-            font-size: 12px;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+            padding: 16px 20px;
+            background: var(--color-bg-secondary);
+            border: 3px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-display);
+            font-size: 14px;
+            transition: all 0.3s var(--ease-smooth);
           "
+          class="category-item"
         >
-          <span style="color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">
+          <span style="color: var(--color-text-secondary); font-weight: 600;">
             {{ categoryLabels[cat] || cat }}
           </span>
-          <span style="color: var(--color-accent); font-weight: 700; font-size: 14px;">
+          <span style="color: var(--color-primary); font-weight: 700; font-size: 18px;">
             {{ count }}
           </span>
         </div>
@@ -186,35 +208,41 @@
     <!-- Technical Details -->
     <div
       style="
-        padding: 24px;
+        padding: 32px;
         background: var(--color-bg-tertiary);
-        border: var(--border-normal) solid var(--color-border);
+        border: 3px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
       "
     >
       <h3
         style="
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          color: var(--color-text-secondary);
-          margin-bottom: 16px;
-          font-weight: 800;
+          font-size: 18px;
+          color: var(--color-text-primary);
+          margin-bottom: 20px;
+          font-weight: 700;
+          font-family: var(--font-display);
+          display: flex;
+          align-items: center;
+          gap: 10px;
         "
       >
-        ◆ Technical Report
+        <span style="font-size: 20px;">🔧</span>
+        <span>Technical Report</span>
       </h3>
-      <div style="margin-bottom: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted);">
-        Engine Version: <span style="color: var(--color-accent); font-weight: 600;">{{ response.version }}</span>
+      <div style="margin-bottom: 20px; font-family: var(--font-display); font-size: 14px; color: var(--color-text-secondary); font-weight: 600;">
+        Engine Version: <span style="color: var(--color-primary); font-weight: 700;">{{ response.version }}</span>
       </div>
       <pre
         style="
-          background: var(--color-bg-primary);
-          border: var(--border-thin) solid var(--color-border);
-          padding: 16px;
+          background: var(--color-bg-secondary);
+          border: 3px solid var(--color-border);
+          border-radius: var(--radius-md);
+          padding: 20px;
           overflow: auto;
           font-family: var(--font-mono);
-          font-size: 11px;
-          line-height: 1.5;
+          font-size: 12px;
+          line-height: 1.7;
           max-height: 400px;
           color: var(--color-text-secondary);
         "
@@ -222,8 +250,8 @@
     </div>
 
     <!-- Export Button -->
-    <div style="display: flex; justify-content: flex-end;">
-      <button class="btn-action btn-action--primary" @click="handleExport" style="padding: 12px 32px;">
+    <div style="display: flex; justify-content: center;">
+      <button class="btn-action btn-action--primary" @click="handleExport" style="padding: 16px 48px; font-size: 16px;">
         📥 Export Report (JSON)
       </button>
     </div>
@@ -282,3 +310,16 @@ const handleExport = () => {
   URL.revokeObjectURL(url);
 };
 </script>
+
+<style scoped>
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.category-item:hover {
+  transform: translateX(4px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+</style>

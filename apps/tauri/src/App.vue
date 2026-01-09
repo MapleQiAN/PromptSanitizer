@@ -10,8 +10,8 @@
           <div class="app-shell__logo">
             <div class="app-shell__logo-mark">PS</div>
             <div class="app-shell__logo-text">
-              <div class="app-shell__title">PromptSanitizer</div>
-              <div class="app-shell__subtitle">Privacy Security Lab</div>
+              <div class="app-shell__title">{{ t.brandTitle }}</div>
+              <div class="app-shell__subtitle">{{ t.brandSubtitle }}</div>
             </div>
           </div>
         </div>
@@ -20,20 +20,20 @@
         <div class="app-shell__controls">
           <!-- Primary Actions -->
           <div class="control-section">
-            <div class="control-section__label">Operations</div>
+            <div class="control-section__label">{{ t.operations }}</div>
             <button class="btn-action btn-action--primary" @click="handleSanitize">
-              ⚡ Execute Sanitize
+              {{ t.executeSanitize }}
             </button>
             <button class="btn-action" @click="handleLoadFile" style="margin-top: 12px">
-              📁 Load File
+              {{ t.loadFile }}
             </button>
           </div>
 
           <!-- Configuration Toggle -->
           <div class="control-section">
-            <div class="control-section__label">Configuration</div>
+            <div class="control-section__label">{{ t.configuration }}</div>
             <button class="btn-action" @click="showConfig = !showConfig">
-              {{ showConfig ? '⊗ Hide Config' : '⊕ Show Config' }}
+              {{ showConfig ? t.hideConfig : t.showConfig }}
             </button>
           </div>
 
@@ -44,14 +44,14 @@
 
           <!-- Statistics (if available) -->
           <div v-if="findings.length > 0" class="control-section">
-            <div class="control-section__label">Statistics</div>
-            <div style="padding: 12px; background: var(--color-bg-tertiary); border: 1px solid var(--color-border); font-family: var(--font-mono); font-size: 12px; line-height: 1.8;">
+            <div class="control-section__label">{{ t.statistics }}</div>
+            <div style="padding: 16px; background: var(--color-bg-tertiary); border: 3px solid var(--color-border); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 13px; line-height: 2;">
               <div style="display: flex; justify-content: space-between;">
-                <span style="color: var(--color-text-muted);">Total Findings:</span>
-                <span style="color: var(--color-accent); font-weight: 700;">{{ findings.length }}</span>
+                <span style="color: var(--color-text-secondary);">{{ t.totalFindings }}</span>
+                <span style="color: var(--color-primary); font-weight: 700;">{{ findings.length }}</span>
               </div>
-              <div v-if="response" style="display: flex; justify-content: space-between; margin-top: 6px;">
-                <span style="color: var(--color-text-muted);">Risk Score:</span>
+              <div v-if="response" style="display: flex; justify-content: space-between; margin-top: 8px;">
+                <span style="color: var(--color-text-secondary);">{{ t.riskScore }}</span>
                 <span :style="{ color: getRiskColor(response.risk_score), fontWeight: 700 }">
                   {{ response.risk_score }}
                 </span>
@@ -71,27 +71,32 @@
             :class="{ 'view-switcher__btn--active': viewMode === 'split' }"
             @click="viewMode = 'split'"
           >
-            [Split]
+            {{ lang === 'zh' ? '分栏' : 'Split' }}
           </button>
           <button
             class="view-switcher__btn"
             :class="{ 'view-switcher__btn--active': viewMode === 'diff' }"
             @click="viewMode = 'diff'"
           >
-            [Diff]
+            {{ lang === 'zh' ? '对比' : 'Diff' }}
           </button>
           <button
             class="view-switcher__btn"
             :class="{ 'view-switcher__btn--active': viewMode === 'report' }"
             @click="viewMode = 'report'"
           >
-            [Report]
+            {{ lang === 'zh' ? '报告' : 'Report' }}
           </button>
         </div>
 
-        <button class="theme-toggle" @click="toggleTheme">
-          {{ theme === 'dark' ? '◐ DARK' : '◑ LIGHT' }}
-        </button>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="lang-toggle" @click="toggleLang">
+            {{ lang === 'zh' ? '🌏 中文' : '🌍 EN' }}
+          </button>
+          <button class="theme-toggle" @click="toggleTheme">
+            {{ theme === 'dark' ? t.darkMode : t.lightMode }}
+          </button>
+        </div>
       </header>
 
       <!-- ============================================
@@ -102,7 +107,7 @@
         <template v-if="viewMode === 'split'">
           <div class="panel">
             <div class="panel__header">
-              <h2 class="panel__title">◆ Original Text</h2>
+              <h2 class="panel__title">{{ t.originalText }}</h2>
             </div>
             <div class="panel__body">
               <MainPanel
@@ -117,7 +122,7 @@
 
           <div class="panel">
             <div class="panel__header">
-              <h2 class="panel__title">◆ Sanitized Output</h2>
+              <h2 class="panel__title">{{ t.sanitizedOutput }}</h2>
             </div>
             <div class="panel__body">
               <MainPanel
@@ -133,24 +138,24 @@
         <!-- Diff View -->
         <div v-if="viewMode === 'diff'" class="panel" style="flex: 1;">
           <div class="panel__header">
-            <h2 class="panel__title">◆ Side-by-Side Comparison</h2>
+            <h2 class="panel__title">{{ t.comparison }}</h2>
           </div>
           <div class="panel__body">
             <div style="display: grid; grid-template-columns: 1fr 4px 1fr; gap: 20px; height: 100%;">
               <div style="display: flex; flex-direction: column;">
-                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-bottom: 12px; font-weight: 700;">
-                  ▸ Before
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 12px; font-family: var(--font-display);">
+                  {{ t.before }}
                 </div>
-                <pre class="text-editor" readonly style="flex: 1;">{{ originalText || '(Empty)' }}</pre>
+                <pre class="text-editor" readonly style="flex: 1;">{{ originalText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
               </div>
               
-              <div style="width: 4px; background: linear-gradient(to bottom, transparent, var(--color-accent) 50%, transparent); opacity: 0.3;"></div>
+              <div style="width: 4px; background: linear-gradient(to bottom, transparent, var(--color-primary) 50%, transparent); opacity: 0.3; border-radius: var(--radius-full);"></div>
               
               <div style="display: flex; flex-direction: column;">
-                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-bottom: 12px; font-weight: 700;">
-                  ▸ After
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 12px; font-family: var(--font-display);">
+                  {{ t.after }}
                 </div>
-                <pre class="text-editor" readonly style="flex: 1;">{{ sanitizedText || '(Empty)' }}</pre>
+                <pre class="text-editor" readonly style="flex: 1;">{{ sanitizedText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
               </div>
             </div>
           </div>
@@ -159,7 +164,7 @@
         <!-- Report View -->
         <div v-if="viewMode === 'report' && response" class="panel" style="flex: 1;">
           <div class="panel__header">
-            <h2 class="panel__title">◆ Security Analysis Report</h2>
+            <h2 class="panel__title">{{ t.securityReport }}</h2>
           </div>
           <div class="panel__body">
             <ReportView :response="response" />
@@ -168,13 +173,13 @@
 
         <!-- Empty State for Report -->
         <div v-if="viewMode === 'report' && !response" class="panel" style="flex: 1;">
-          <div class="panel__body" style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: var(--color-text-muted);">
-            <div style="font-size: 48px; opacity: 0.3;">⚠</div>
-            <div style="font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">
-              No report available
+          <div class="panel__body" style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; color: var(--color-text-muted);">
+            <div style="font-size: 64px; opacity: 0.2;">🎀</div>
+            <div style="font-family: var(--font-display); font-size: 18px; font-weight: 600;">
+              {{ t.noReport }}
             </div>
-            <div style="font-size: 11px;">
-              Execute sanitization to generate a security report
+            <div style="font-size: 14px;">
+              {{ t.noReportDesc }}
             </div>
           </div>
         </div>
@@ -186,14 +191,14 @@
       <footer v-if="findings.length > 0" class="app-shell__footer">
         <div class="findings-header">
           <div class="findings-title">
-            <span>Detection Results</span>
+            <span>{{ t.detectionResults }}</span>
             <span class="findings-count">{{ findings.length }}</span>
           </div>
           <select
             v-model="filterCategory"
-            style="padding: 6px 12px; font-size: 11px; min-width: 140px;"
+            style="padding: 10px 16px; font-size: 13px; min-width: 160px;"
           >
-            <option value="all">All Categories</option>
+            <option value="all">{{ t.allCategories }}</option>
             <option v-for="cat in categories" :key="cat" :value="cat">
               {{ categoryLabels[cat] || cat }}
             </option>
@@ -221,6 +226,67 @@ import FindingsList from "./components/FindingsList.vue";
 import ReportView from "./components/ReportView.vue";
 import type { Config, Finding, Response } from "./types";
 
+// 语言配置
+type Language = "zh" | "en";
+const lang = ref<Language>("zh");
+
+const i18n = {
+  zh: {
+    brandTitle: "提示词净化器",
+    brandSubtitle: "隐私安全实验室",
+    operations: "操作",
+    executeSanitize: "⚡ 执行净化",
+    loadFile: "📁 加载文件",
+    configuration: "配置",
+    hideConfig: "⊗ 隐藏配置",
+    showConfig: "⊕ 显示配置",
+    statistics: "统计信息",
+    totalFindings: "发现总数:",
+    riskScore: "风险评分:",
+    originalText: "💝 原始文本",
+    sanitizedOutput: "✨ 净化输出",
+    comparison: "🎀 对比视图",
+    securityReport: "🦋 安全报告",
+    before: "▸ 净化前",
+    after: "▸ 净化后",
+    noReport: "暂无报告",
+    noReportDesc: "执行净化以生成安全报告",
+    detectionResults: "检测结果",
+    allCategories: "所有类别",
+    inputPlaceholder: "请输入要净化的文本...",
+    darkMode: "🌙 深色",
+    lightMode: "☀️ 浅色",
+  },
+  en: {
+    brandTitle: "PromptSanitizer",
+    brandSubtitle: "Privacy Security Lab",
+    operations: "Operations",
+    executeSanitize: "⚡ Execute Sanitize",
+    loadFile: "📁 Load File",
+    configuration: "Configuration",
+    hideConfig: "⊗ Hide Config",
+    showConfig: "⊕ Show Config",
+    statistics: "Statistics",
+    totalFindings: "Total Findings:",
+    riskScore: "Risk Score:",
+    originalText: "💝 Original Text",
+    sanitizedOutput: "✨ Sanitized Output",
+    comparison: "🎀 Comparison",
+    securityReport: "🦋 Security Report",
+    before: "▸ Before",
+    after: "▸ After",
+    noReport: "No Report Available",
+    noReportDesc: "Execute sanitization to generate a security report",
+    detectionResults: "Detection Results",
+    allCategories: "All Categories",
+    inputPlaceholder: "Enter text to sanitize...",
+    darkMode: "🌙 Dark",
+    lightMode: "☀️ Light",
+  },
+};
+
+const t = computed(() => i18n[lang.value]);
+
 const originalText = ref("");
 const sanitizedText = ref("");
 const findings = ref<Finding[]>([]);
@@ -243,7 +309,7 @@ const config = ref<Config>({
 });
 const showConfig = ref(false);
 const viewMode = ref<"split" | "diff" | "report">("split");
-const theme = ref<"dark" | "light">("dark");
+const theme = ref<"dark" | "light">("light");
 const filterCategory = ref<string>("all");
 
 const categoryLabels: Record<string, string> = {
@@ -275,6 +341,10 @@ const applyTheme = (value: "dark" | "light") => {
 
 const toggleTheme = () => {
   theme.value = theme.value === "dark" ? "light" : "dark";
+};
+
+const toggleLang = () => {
+  lang.value = lang.value === "zh" ? "en" : "zh";
 };
 
 const naiveTheme = computed<GlobalTheme | null>(() =>
