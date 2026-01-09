@@ -7,11 +7,11 @@
 **一个开源、开箱即用的桌面应用，用于在将 Prompt 发送给 LLM 之前，一键扫描并清洗敏感信息。**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub release](https://img.shields.io/github/release/your-username/PromptSanitizer.svg)](https://github.com/your-username/PromptSanitizer/releases)
-[![GitHub stars](https://img.shields.io/github/stars/your-username/PromptSanitizer.svg?style=social&label=Star)](https://github.com/your-username/PromptSanitizer)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/PromptSanitizer.svg?style=social&label=Fork)](https://github.com/your-username/PromptSanitizer/fork)
-[![GitHub issues](https://img.shields.io/github/issues/your-username/PromptSanitizer.svg)](https://github.com/your-username/PromptSanitizer/issues)
-[![GitHub PRs](https://img.shields.io/github/issues-pr/your-username/PromptSanitizer.svg)](https://github.com/your-username/PromptSanitizer/pulls)
+[![GitHub release](https://img.shields.io/github/release/MapleQiAN/PromptSanitizer.svg)](https://github.com/MapleQiAN/PromptSanitizer/releases)
+[![GitHub stars](https://img.shields.io/github/stars/MapleQiAN/PromptSanitizer.svg?style=social&label=Star)](https://github.com/MapleQiAN/PromptSanitizer)
+[![GitHub forks](https://img.shields.io/github/forks/MapleQiAN/PromptSanitizer.svg?style=social&label=Fork)](https://github.com/MapleQiAN/PromptSanitizer/fork)
+[![GitHub issues](https://img.shields.io/github/issues/MapleQiAN/PromptSanitizer.svg)](https://github.com/MapleQiAN/PromptSanitizer/issues)
+[![GitHub PRs](https://img.shields.io/github/issues-pr/MapleQiAN/PromptSanitizer.svg)](https://github.com/MapleQiAN/PromptSanitizer/pulls)
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://golang.org/)
 [![Rust Version](https://img.shields.io/badge/Rust-1.70+-000000?logo=rust)](https://www.rust-lang.org/)
@@ -20,10 +20,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
 [English](README.md) • [中文](README.md) • [功能特性](#-特性) • [快速开始](#-快速开始) • [项目架构](#️-项目架构) • [设计思路](#-设计思路) • [文档](#-文档)
-
-[![Download](https://img.shields.io/badge/Download-Latest-brightgreen)](https://github.com/your-username/PromptSanitizer/releases/latest)
-[![Documentation](https://img.shields.io/badge/Docs-Online-blue)](https://github.com/your-username/PromptSanitizer/wiki)
-[![Discussions](https://img.shields.io/badge/Discussions-Q%26A-yellow)](https://github.com/your-username/PromptSanitizer/discussions)
 
 </div>
 
@@ -343,7 +339,7 @@ type Detector interface {
 
 #### 方式一：下载预编译版本（推荐）
 
-访问 [Releases](https://github.com/your-username/PromptSanitizer/releases) 页面下载对应平台的安装包：
+访问 [Releases](https://github.com/MapleQiAN/PromptSanitizer/releases) 页面下载对应平台的安装包：
 
 - **Windows**: `PromptSanitizer-Setup-x.x.x.exe`
 - **macOS**: `PromptSanitizer-x.x.x.dmg`
@@ -364,7 +360,7 @@ type Detector interface {
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-username/PromptSanitizer.git
+git clone https://github.com/MapleQiAN/PromptSanitizer.git
 cd PromptSanitizer
 
 # 2. 安装依赖
@@ -686,17 +682,17 @@ PromptSanitizer/
 
 ### 🔍 安全审计
 
-我们欢迎安全研究人员报告安全问题。请通过 [Security Advisories](https://github.com/your-username/PromptSanitizer/security/advisories) 提交安全漏洞报告。
+我们欢迎安全研究人员报告安全问题。请通过 [Security Advisories](https://github.com/MapleQiAN/PromptSanitizer/security/advisories) 提交安全漏洞报告。
 
 ## 📊 项目统计
 
 <div align="center">
 
-![GitHub Contributors](https://img.shields.io/github/contributors/your-username/PromptSanitizer)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/your-username/PromptSanitizer)
-![GitHub Repo Size](https://img.shields.io/github/repo-size/your-username/PromptSanitizer)
-![GitHub Language Count](https://img.shields.io/github/languages/count/your-username/PromptSanitizer)
-![GitHub Top Language](https://img.shields.io/github/languages/top/your-username/PromptSanitizer)
+![GitHub Contributors](https://img.shields.io/github/contributors/MapleQiAN/PromptSanitizer)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/MapleQiAN/PromptSanitizer)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/MapleQiAN/PromptSanitizer)
+![GitHub Language Count](https://img.shields.io/github/languages/count/MapleQiAN/PromptSanitizer)
+![GitHub Top Language](https://img.shields.io/github/languages/top/MapleQiAN/PromptSanitizer)
 
 </div>
 
@@ -707,17 +703,17 @@ PromptSanitizer/
 ### 如何贡献
 
 1. **🐛 报告问题**
-   - 在 [Issues](https://github.com/your-username/PromptSanitizer/issues) 中提交 Bug 报告
+   - 在 [Issues](https://github.com/MapleQiAN/PromptSanitizer/issues) 中提交 Bug 报告
    - 使用 Issue 模板，提供详细的重现步骤
 
 2. **💡 提出建议**
-   - 在 [Discussions](https://github.com/your-username/PromptSanitizer/discussions) 中分享想法
+   - 在 [Discussions](https://github.com/MapleQiAN/PromptSanitizer/discussions) 中分享想法
    - 或创建 Feature Request Issue
 
 3. **🔧 提交代码**
    ```bash
    # Fork 项目
-   git clone https://github.com/your-username/PromptSanitizer.git
+   git clone https://github.com/MapleQiAN/PromptSanitizer.git
    cd PromptSanitizer
    
    # 创建功能分支
@@ -741,7 +737,7 @@ PromptSanitizer/
 感谢所有为项目做出贡献的开发者！
 
 <!-- 如果使用 all-contributors，可以添加徽章 -->
-[![Contributors](https://img.shields.io/github/contributors/your-username/PromptSanitizer)](https://github.com/your-username/PromptSanitizer/graphs/contributors)
+[![Contributors](https://img.shields.io/github/contributors/MapleQiAN/PromptSanitizer)](https://github.com/MapleQiAN/PromptSanitizer/graphs/contributors)
 
 详细的贡献指南请查看 [docs/development.md](docs/development.md)
 
@@ -779,7 +775,7 @@ SOFTWARE.
 
 如果这个项目对你有帮助，请给个 Star ⭐️
 
-[![Star History Chart](https://api.star-history.com/svg?repos=MapleQiAN/PromptSanitizer&type=Date)](https://star-history.com/#your-username/PromptSanitizer&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=MapleQiAN/PromptSanitizer&type=Date)](https://star-history.com/#MapleQiAN/PromptSanitizer&Date)
 
 ---
 
@@ -789,8 +785,8 @@ SOFTWARE.
 
 Made with ❤️ by the PromptSanitizer Team
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/your-username?style=social)](https://github.com/sponsors/your-username)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/your-username)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/MapleQiAN?style=social)](https://github.com/sponsors/MapleQiAN)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/MapleQiAN)
 
 **⭐ Star | 🍴 Fork | 📝 Issue | 💬 Discuss**
 
@@ -850,4 +846,4 @@ Made with ❤️ by the PromptSanitizer Team
 - [ ] 语义级去标识（可选插件）
 - [ ] LLM 增强模式（可选，默认关闭）
 
-> 💡 **当前进度**：Phase 1 已完成，正在推进 Phase 2。查看 [Projects](https://github.com/your-username/PromptSanitizer/projects) 了解详细任务规划。
+> 💡 **当前进度**：Phase 1 已完成，正在推进 Phase 2。查看 [Projects](https://github.com/MapleQiAN/PromptSanitizer/projects) 了解详细任务规划。
