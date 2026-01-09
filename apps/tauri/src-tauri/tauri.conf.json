@@ -1,0 +1,46 @@
+{
+  "productName": "PromptSanitizer",
+  "version": "0.1.0",
+  "identifier": "com.promptsanitizer.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "PromptSanitizer",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [
+      "bin/prompt-sanitizer.exe"
+    ],
+    "externalBin": [
+      "bin/prompt-sanitizer"
+    ],
+    "copyright": "",
+    "category": "Utility",
+    "shortDescription": "Prompt敏感信息去除工具",
+    "longDescription": "一个开源、开箱即用的桌面应用，用于在将Prompt发送给LLM之前，一键扫描并清洗敏感信息。"
+  }
+}

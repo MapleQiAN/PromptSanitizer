@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+target/
+dist/
+build/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Rust
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+
+# Tauri
+apps/tauri/src-tauri/target/
+apps/tauri/src-tauri/bin/
+
+# Build artifacts
+*.msi
+*.dmg
+*.AppImage
+*.deb
+*.rpm

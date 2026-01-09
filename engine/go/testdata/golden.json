@@ -1,0 +1,104 @@
+{
+  "description": "Golden test case - 标准测试用例",
+  "input": {
+    "text": "我的手机号是13812345678，邮箱是test@example.com，身份证号是110101199001011234。服务器IP是192.168.1.100，访问地址是https://api.example.com/v1/users。API Key是sk-123456789012345678901234567890，密码是MySecretPassword123。",
+    "mode": "sanitize",
+    "strategy": "redact",
+    "level": "standard",
+    "enabled_categories": ["phone", "email", "id_card", "ip", "domain", "token", "password"],
+    "allowlist": [],
+    "semantic_mode": "off"
+  },
+  "expected_output": {
+    "sanitized_text": "我的手机号是[REDACTED:PHONE]，邮箱是[REDACTED:EMAIL]，身份证号是[REDACTED:ID_CARD]。服务器IP是[REDACTED:IP]，访问地址是[REDACTED:DOMAIN]。API Key是[REDACTED:TOKEN]，密码是[REDACTED:PASSWORD]。",
+    "findings": [
+      {
+        "type": "phone",
+        "start": 6,
+        "end": 17,
+        "confidence": 0.9,
+        "risk": 60,
+        "replacement": "[REDACTED:PHONE]",
+        "replacement_preview": "138***5678",
+        "reason": "检测到中国手机号格式"
+      },
+      {
+        "type": "email",
+        "start": 20,
+        "end": 35,
+        "confidence": 0.95,
+        "risk": 50,
+        "replacement": "[REDACTED:EMAIL]",
+        "replacement_preview": "tes***com",
+        "reason": "检测到邮箱地址格式"
+      },
+      {
+        "type": "id_card",
+        "start": 38,
+        "end": 56,
+        "confidence": 0.85,
+        "risk": 90,
+        "replacement": "[REDACTED:ID_CARD]",
+        "replacement_preview": "110***1234",
+        "reason": "检测到18位身份证号格式"
+      },
+      {
+        "type": "ip",
+        "start": 61,
+        "end": 72,
+        "confidence": 0.9,
+        "risk": 40,
+        "replacement": "[REDACTED:IP]",
+        "replacement_preview": "192***100",
+        "reason": "检测到IPv4地址格式"
+      },
+      {
+        "type": "domain",
+        "start": 76,
+        "end": 103,
+        "confidence": 0.95,
+        "risk": 30,
+        "replacement": "[REDACTED:DOMAIN]",
+        "replacement_preview": "htt***sers",
+        "reason": "检测到URL格式"
+      },
+      {
+        "type": "token",
+        "start": 108,
+        "end": 138,
+        "confidence": 0.9,
+        "risk": 85,
+        "replacement": "[REDACTED:TOKEN]",
+        "replacement_preview": "sk-***890",
+        "reason": "检测到API Key格式"
+      },
+      {
+        "type": "password",
+        "start": 142,
+        "end": 160,
+        "confidence": 0.85,
+        "risk": 95,
+        "replacement": "[REDACTED:PASSWORD]",
+        "replacement_preview": "MyS***123",
+        "reason": "检测到密码字段"
+      }
+    ],
+    "stats": {
+      "total_findings": 7,
+      "by_category": {
+        "phone": 1,
+        "email": 1,
+        "id_card": 1,
+        "ip": 1,
+        "domain": 1,
+        "token": 1,
+        "password": 1
+      },
+      "high_risk_count": 3,
+      "medium_risk_count": 3,
+      "low_risk_count": 1
+    },
+    "risk_score": 65,
+    "version": "0.1.0"
+  }
+}

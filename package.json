@@ -1,0 +1,23 @@
+{
+  "name": "prompt-sanitizer",
+  "version": "0.1.0",
+  "description": "A desktop app for sanitizing sensitive information from prompts",
+  "private": true,
+  "scripts": {
+    "build:go": "cd engine/go && go build -o ../bin/prompt-sanitizer.exe ./cmd/main.go",
+    "build:go:linux": "cd engine/go && GOOS=linux go build -o ../bin/prompt-sanitizer ./cmd/main.go",
+    "build:go:darwin": "cd engine/go && GOOS=darwin go build -o ../bin/prompt-sanitizer ./cmd/main.go",
+    "test:go": "cd engine/go && go test ./...",
+    "dev": "cd apps/tauri && npm run tauri dev",
+    "build": "cd apps/tauri && npm run tauri build"
+  },
+  "keywords": [
+    "privacy",
+    "sanitization",
+    "pii",
+    "desktop-app",
+    "tauri"
+  ],
+  "author": "",
+  "license": "MIT"
+}

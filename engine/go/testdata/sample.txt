@@ -1,0 +1,31 @@
+这是一个测试样例文本，包含各种敏感信息：
+
+1. 联系方式：
+   - 手机号：13812345678
+   - 邮箱：test@example.com
+   - 备用邮箱：admin@company.org
+
+2. 身份信息：
+   - 身份证号：110101199001011234
+
+3. 网络信息：
+   - 服务器IP：192.168.1.100
+   - 访问地址：https://api.example.com/v1/users
+   - 域名：internal.company.com
+
+4. 认证信息：
+   - API Key: sk-123456789012345678901234567890
+   - Bearer Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+   - GitHub Token: ghp_123456789012345678901234567890123456
+   - Cookie: sessionid=abc123def456ghi789jkl012mno345pqr678stu901vwx234yz
+
+5. 密码信息：
+   - password=MySecretPassword123
+   - pwd: AnotherPassword456
+
+6. 私钥（示例）：
+   -----BEGIN RSA PRIVATE KEY-----
+   MIIEpAIBAAKCAQEA1234567890abcdefghijklmnopqrstuvwxyz
+   -----END RSA PRIVATE KEY-----
+
+请谨慎处理以上信息！
