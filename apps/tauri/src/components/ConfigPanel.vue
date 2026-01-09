@@ -3,39 +3,42 @@
     <!-- Processing Mode -->
     <div>
       <label>{{ t.mode }}</label>
-      <select
-        :value="config.mode"
-        @change="(e) => updateConfig({ mode: (e.target as HTMLSelectElement).value as any })"
-      >
-        <option value="sanitize">{{ t.sanitize }}</option>
-        <option value="annotate">{{ t.annotate }}</option>
-      </select>
+      <CustomSelect
+        :model-value="config.mode"
+        :options="[
+          { value: 'sanitize', label: t.sanitize },
+          { value: 'annotate', label: t.annotate },
+        ]"
+        @update:model-value="(value) => updateConfig({ mode: value as any })"
+      />
     </div>
 
     <!-- Strategy -->
     <div>
       <label>{{ t.strategy }}</label>
-      <select
-        :value="config.strategy"
-        @change="(e) => updateConfig({ strategy: (e.target as HTMLSelectElement).value as any })"
-      >
-        <option value="redact">{{ t.redact }}</option>
-        <option value="mask">{{ t.mask }}</option>
-        <option value="pseudonym">{{ t.pseudonym }}</option>
-      </select>
+      <CustomSelect
+        :model-value="config.strategy"
+        :options="[
+          { value: 'redact', label: t.redact },
+          { value: 'mask', label: t.mask },
+          { value: 'pseudonym', label: t.pseudonym },
+        ]"
+        @update:model-value="(value) => updateConfig({ strategy: value as any })"
+      />
     </div>
 
     <!-- Detection Level -->
     <div>
       <label>{{ t.level }}</label>
-      <select
-        :value="config.level"
-        @change="(e) => updateConfig({ level: (e.target as HTMLSelectElement).value as any })"
-      >
-        <option value="lenient">{{ t.lenient }}</option>
-        <option value="standard">{{ t.standard }}</option>
-        <option value="strict">{{ t.strict }}</option>
-      </select>
+      <CustomSelect
+        :model-value="config.level"
+        :options="[
+          { value: 'lenient', label: t.lenient },
+          { value: 'standard', label: t.standard },
+          { value: 'strict', label: t.strict },
+        ]"
+        @update:model-value="(value) => updateConfig({ level: value as any })"
+      />
     </div>
 
     <!-- Category Toggles -->
@@ -126,6 +129,7 @@
 
 <script setup lang="ts">
 import { computed, toRef } from "vue";
+import CustomSelect from "./CustomSelect.vue";
 import type { Config } from "../types";
 
 type Language = "zh" | "en";

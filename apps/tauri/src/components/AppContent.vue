@@ -191,16 +191,17 @@
           <span>{{ t.detectionResults }}</span>
           <span class="findings-count">{{ findings.length }}</span>
         </div>
-        <select
+        <CustomSelect
           v-model="filterCategory"
-          class="styled-select"
+          :options="[
+            { value: 'all', label: t.allCategories },
+            ...categories.map((cat) => ({
+              value: cat,
+              label: categoryLabels[cat] || cat,
+            })),
+          ]"
           style="min-width: 160px;"
-        >
-          <option value="all">{{ t.allCategories }}</option>
-          <option v-for="cat in categories" :key="cat" :value="cat">
-            {{ categoryLabels[cat] || cat }}
-          </option>
-        </select>
+        />
       </div>
       <div class="findings-list">
         <FindingsList
@@ -220,6 +221,7 @@ import MainPanel from "./MainPanel.vue";
 import ConfigPanel from "./ConfigPanel.vue";
 import FindingsList from "./FindingsList.vue";
 import ReportView from "./ReportView.vue";
+import CustomSelect from "./CustomSelect.vue";
 import type { Config, Finding, Response } from "../types";
 
 const message = useMessage();
