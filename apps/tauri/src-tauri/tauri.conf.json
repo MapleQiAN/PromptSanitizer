@@ -33,7 +33,6 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "bin/prompt-sanitizer.exe"
     ],
     "externalBin": [
       "bin/prompt-sanitizer"
