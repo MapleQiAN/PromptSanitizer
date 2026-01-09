@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"github.com/prompt-sanitizer/engine/internal/detector"
 	"github.com/prompt-sanitizer/engine/internal/sanitizer"
 	"github.com/prompt-sanitizer/engine/pkg/types"
@@ -131,18 +130,70 @@ func (e *Engine) applyAllowlist(findings []detector.Finding, text string, allowl
 	return filtered
 }
 
-// deduplicateFindings 去重
+// deduplicateFindings 去重并处理重叠
 func (e *Engine) deduplicateFindings(findings []detector.Finding) []detector.Finding {
-	seen := make(map[string]bool)
-	var unique []detector.Finding
+	// 先按优先级排序：风险高的优先，然后按长度（长的优先），最后按类型优先级
+	// 类型优先级：email > domain, token > password > private_key
+	typePriority := map[detector.Category]int{
+		detector.CategoryEmail:      10,
+		detector.CategoryDomain:     1,
+		detector.CategoryToken:      8,
+		detector.CategoryPassword:   7,
+		detector.CategoryPrivateKey: 9,
+		detector.CategoryIDCard:     9,
+		detector.CategoryPhone:      6,
+		detector.CategoryIP:         5,
+	}
 
-	for _, f := range findings {
-		key := fmt.Sprintf("%d-%d-%s", f.Start, f.End, f.Type)
-		if !seen[key] {
-			seen[key] = true
+	sorted := make([]detector.Finding, len(findings))
+	copy(sorted, findings)
+	
+	// 排序：风险高的优先，然后按类型优先级，最后按长度
+	for i := 0; i < len(sorted)-1; i++ {
+		for j := i + 1; j < len(sorted); j++ {
+			shouldSwap := false
+			
+			// 优先按风险排序
+			if sorted[i].Risk < sorted[j].Risk {
+				shouldSwap = true
+			} else if sorted[i].Risk == sorted[j].Risk {
+				// 风险相同时，按类型优先级
+				priI := typePriority[sorted[i].Type]
+				priJ := typePriority[sorted[j].Type]
+				if priI < priJ {
+					shouldSwap = true
+				} else if priI == priJ {
+					// 类型优先级相同时，按长度（长的优先）
+					lenI := sorted[i].End - sorted[i].Start
+					lenJ := sorted[j].End - sorted[j].Start
+					if lenI < lenJ {
+						shouldSwap = true
+					}
+				}
+			}
+			
+			if shouldSwap {
+				sorted[i], sorted[j] = sorted[j], sorted[i]
+			}
+		}
+	}
+
+	// 去除重叠：如果两个 finding 重叠，保留优先级高的
+	var unique []detector.Finding
+	for _, f := range sorted {
+		overlapped := false
+		for _, existing := range unique {
+			// 检查是否重叠：两个区间有交集
+			if !(f.End <= existing.Start || f.Start >= existing.End) {
+				overlapped = true
+				break
+			}
+		}
+		if !overlapped {
 			unique = append(unique, f)
 		}
 	}
+
 	return unique
 }
 

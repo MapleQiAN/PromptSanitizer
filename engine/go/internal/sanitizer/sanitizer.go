@@ -33,19 +33,18 @@ func (s *Sanitizer) Sanitize(text string) (string, []types.Finding) {
 		return sortedFindings[i].Start > sortedFindings[j].Start
 	})
 
-	result := []rune(text)
+	result := text
 	convertedFindings := make([]types.Finding, 0, len(sortedFindings))
 
 	for _, f := range sortedFindings {
 		replacement := s.getReplacement(f)
 		preview := s.getPreview(f, replacement)
 
-		// 替换文本
+		// 替换文本（使用字节索引，因为 Start 和 End 是基于字节的）
 		start := f.Start
 		end := f.End
-		if start < len(result) && end <= len(result) {
-			newText := string(result[:start]) + replacement + string(result[end:])
-			result = []rune(newText)
+		if start >= 0 && end <= len(result) && start < end {
+			result = result[:start] + replacement + result[end:]
 		}
 
 		convertedFindings = append(convertedFindings, types.Finding{
@@ -65,7 +64,7 @@ func (s *Sanitizer) Sanitize(text string) (string, []types.Finding) {
 		convertedFindings[i], convertedFindings[j] = convertedFindings[j], convertedFindings[i]
 	}
 
-	return string(result), convertedFindings
+	return result, convertedFindings
 }
 
 // getReplacement 获取替换文本

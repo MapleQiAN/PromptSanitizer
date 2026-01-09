@@ -7,7 +7,9 @@
       <!-- Brand / Logo -->
       <div class="app-shell__brand">
         <div class="app-shell__logo">
-          <div class="app-shell__logo-mark">PS</div>
+          <div class="app-shell__logo-mark">
+            <img src="/icon.png" alt="PromptSanitizer" class="app-shell__logo-img" />
+          </div>
           <div class="app-shell__logo-text">
             <div class="app-shell__title">{{ t.brandTitle }}</div>
             <div class="app-shell__subtitle">{{ t.brandSubtitle }}</div>
@@ -191,7 +193,8 @@
         </div>
         <select
           v-model="filterCategory"
-          style="padding: 10px 16px; font-size: 13px; min-width: 160px;"
+          class="styled-select"
+          style="min-width: 160px;"
         >
           <option value="all">{{ t.allCategories }}</option>
           <option v-for="cat in categories" :key="cat" :value="cat">
