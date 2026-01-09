@@ -171,9 +171,12 @@ func (s *Sanitizer) mask(text string, category detector.Category) string {
 			return parts[0] + "-**-**"
 		}
 		prefixLen, suffixLen = 4, 0
-	case detector.CategoryToken, detector.CategoryPassword:
-		// Token/密码：保留前4位和后4位，如 sk-t****FAKE
-		prefixLen, suffixLen = 4, 4
+	case detector.CategoryToken:
+		// Token/密钥：根据不同类型采用不同脱敏策略
+		return s.maskToken(text)
+	case detector.CategoryPassword:
+		// 密码：全部打码，如 ********
+		return strings.Repeat("*", length)
 	case detector.CategoryPrivateKey:
 		// 私钥：全部替换为占位符
 		return "[PRIVATE_KEY_REDACTED]"
@@ -192,6 +195,86 @@ func (s *Sanitizer) mask(text string, category detector.Category) string {
 	}
 	masked := strings.Repeat("*", length-prefixLen-suffixLen)
 	return prefix + masked + suffix
+}
+
+// maskToken 针对不同类型的Token/密钥采用精细脱敏策略
+func (s *Sanitizer) maskToken(text string) string {
+	length := len(text)
+	if length <= 4 {
+		return "****"
+	}
+
+	textUpper := strings.ToUpper(text)
+	
+	// AWS Access Key ID: AKIA开头，固定20字符
+	if strings.HasPrefix(textUpper, "AKIA") && length == 20 {
+		return "AKIA" + strings.Repeat("*", 16)
+	}
+
+	// AWS Secret Access Key: 通常40字符的base64字符串
+	if length == 40 && isBase64Like(text) {
+		return strings.Repeat("*", 40)
+	}
+
+	// OpenAI API Key: sk-开头
+	if strings.HasPrefix(text, "sk-") || strings.HasPrefix(text, "SK-") {
+		// sk-test-xxx 或 sk-xxx 格式
+		parts := strings.Split(text, "-")
+		if len(parts) >= 2 {
+			// 保留前缀和最后4位，如 sk-****FAKE
+			if length > 8 {
+				return parts[0] + "-" + strings.Repeat("*", length-len(parts[0])-5) + text[length-4:]
+			}
+			return parts[0] + "-" + strings.Repeat("*", length-len(parts[0])-1)
+		}
+		return "sk-" + strings.Repeat("*", length-3)
+	}
+
+	// GitHub Token: ghp_, gho_, ghu_, ghs_, ghr_ 开头
+	if strings.HasPrefix(textUpper, "GHP_") || strings.HasPrefix(textUpper, "GHO_") ||
+		strings.HasPrefix(textUpper, "GHU_") || strings.HasPrefix(textUpper, "GHS_") ||
+		strings.HasPrefix(textUpper, "GHR_") {
+		prefix := text[:4]
+		if length > 8 {
+			return prefix + strings.Repeat("*", length-8) + text[length-4:]
+		}
+		return prefix + strings.Repeat("*", length-4)
+	}
+
+	// Stripe Token: pk_ 或 sk_ 开头
+	if strings.HasPrefix(textUpper, "PK_") || strings.HasPrefix(textUpper, "SK_") {
+		prefix := text[:3]
+		if length > 7 {
+			return prefix + strings.Repeat("*", length-7) + text[length-4:]
+		}
+		return prefix + strings.Repeat("*", length-3)
+	}
+
+	// JWT Token: eyJ 开头
+	if strings.HasPrefix(text, "eyJ") {
+		// JWT通常很长，只保留前6位和后6位
+		if length > 12 {
+			return text[:6] + strings.Repeat("*", length-12) + text[length-6:]
+		}
+		return strings.Repeat("*", length)
+	}
+
+	// 通用Token: 保留前4位和后4位
+	if length > 8 {
+		return text[:4] + strings.Repeat("*", length-8) + text[length-4:]
+	}
+	return strings.Repeat("*", length)
+}
+
+// isBase64Like 检查字符串是否像base64编码（简单检查）
+func isBase64Like(s string) bool {
+	base64Chars := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+	for _, char := range s {
+		if !strings.ContainsRune(base64Chars, char) {
+			return false
+		}
+	}
+	return true
 }
 
 // redact 替换为占位符

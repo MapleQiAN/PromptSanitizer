@@ -270,13 +270,30 @@ func NewTokenDetector() *TokenDetector {
 
 func (d *TokenDetector) Detect(text string, level string) []Finding {
 	var findings []Finding
-	// API Key 常见前缀
+	// API Key 常见前缀和格式
 	apiKeyPatterns := []*regexp.Regexp{
 		regexp.MustCompile(`(?i)(?:api[_-]?key|apikey)[\s:=]+([a-zA-Z0-9_\-]{20,})`),
 		regexp.MustCompile(`(?i)(?:bearer|token)[\s:]+([a-zA-Z0-9_\-\.]{20,})`),
-		regexp.MustCompile(`(?i)sk-[a-zA-Z0-9]{20,}`),  // OpenAI style
-		regexp.MustCompile(`(?i)pk_[a-zA-Z0-9]{20,}`),  // Stripe style
-		regexp.MustCompile(`(?i)ghp_[a-zA-Z0-9]{20,}`), // GitHub token
+		regexp.MustCompile(`(?i)sk-[a-zA-Z0-9\-]{20,}`), // OpenAI style: sk-test-xxx or sk-xxx
+		regexp.MustCompile(`(?i)pk_[a-zA-Z0-9]{20,}`),   // Stripe style
+		regexp.MustCompile(`(?i)ghp_[a-zA-Z0-9]{20,}`),  // GitHub token
+		regexp.MustCompile(`(?i)gho_[a-zA-Z0-9]{20,}`),  // GitHub OAuth token
+		regexp.MustCompile(`(?i)ghu_[a-zA-Z0-9]{20,}`),  // GitHub user-to-server token
+		regexp.MustCompile(`(?i)ghs_[a-zA-Z0-9]{20,}`),  // GitHub server-to-server token
+		regexp.MustCompile(`(?i)ghr_[a-zA-Z0-9]{20,}`),  // GitHub refresh token
+		regexp.MustCompile(`\bAKIA[0-9A-Z]{16}\b`),      // AWS Access Key ID (固定20字符)
+		regexp.MustCompile(`(?i)(?:aws[_\s]?access[_\s]?key|access[_\s]?key[_\s]?id)[\s:=]+(AKIA[0-9A-Z]{16})`),
+	}
+
+	// AWS Secret Access Key (40字符base64字符串，通常出现在"secret"关键词附近)
+	awsSecretPatterns := []*regexp.Regexp{
+		regexp.MustCompile(`(?i)(?:aws[_\s]?secret|secret[_\s]?access[_\s]?key|aws[_\s]?secret[_\s]?key)[\s:=]+([A-Za-z0-9+/]{40})`),
+		regexp.MustCompile(`(?i)(?:aws[_\s]?secret|secret[_\s]?access[_\s]?key)[\s:=]+([A-Za-z0-9+/=]{40,})`),
+	}
+
+	// 通用Secret Key模式（出现在"secret"关键词附近的长字符串）
+	secretKeyPatterns := []*regexp.Regexp{
+		regexp.MustCompile(`(?i)(?:secret[_\s]?key|secret)[\s:=]+([A-Za-z0-9_\-+/=]{32,})`),
 	}
 
 	// JWT
@@ -294,12 +311,31 @@ func (d *TokenDetector) Detect(text string, level string) []Finding {
 		{cookiePattern, "检测到Cookie/Session格式", 70},
 	}
 
+	// 添加API Key模式
 	for _, p := range apiKeyPatterns {
 		allPatterns = append(allPatterns, struct {
 			pattern *regexp.Regexp
 			reason  string
 			risk    int
 		}{p, "检测到API Key格式", 85})
+	}
+
+	// 添加AWS Secret模式（更高风险）
+	for _, p := range awsSecretPatterns {
+		allPatterns = append(allPatterns, struct {
+			pattern *regexp.Regexp
+			reason  string
+			risk    int
+		}{p, "检测到AWS Secret Key格式", 95})
+	}
+
+	// 添加通用Secret Key模式
+	for _, p := range secretKeyPatterns {
+		allPatterns = append(allPatterns, struct {
+			pattern *regexp.Regexp
+			reason  string
+			risk    int
+		}{p, "检测到Secret Key格式", 90})
 	}
 
 	for _, item := range allPatterns {
