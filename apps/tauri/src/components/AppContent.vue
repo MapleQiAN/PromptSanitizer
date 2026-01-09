@@ -1,12 +1,33 @@
 <template>
-  <div class="app-shell">
+  <div class="app-shell" :class="{ 'app-shell--sidebar-collapsed': sidebarCollapsed }">
     <!-- ============================================
          LEFT SIDEBAR - Control Panel
          ============================================ -->
-    <aside class="app-shell__sidebar">
+    <aside class="app-shell__sidebar" :class="{ 'app-shell__sidebar--collapsed': sidebarCollapsed }">
+      <!-- Toggle Button -->
+      <button class="sidebar-toggle" @click="toggleSidebar" :title="sidebarCollapsed ? t.expandSidebar : t.collapseSidebar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            v-if="!sidebarCollapsed"
+            d="M10 12L6 8L10 4"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            v-else
+            d="M6 4L10 8L6 12"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
       <!-- Brand / Logo -->
       <div class="app-shell__brand">
-        <div class="app-shell__logo">
+        <div class="app-shell__logo" v-if="!sidebarCollapsed">
           <div class="app-shell__logo-mark">
             <img src="/icon.png" alt="PromptSanitizer" class="app-shell__logo-img" />
           </div>
@@ -15,10 +36,14 @@
             <div class="app-shell__subtitle">{{ t.brandSubtitle }}</div>
           </div>
         </div>
+        <!-- Collapsed Logo Icon -->
+        <div v-else class="app-shell__logo-icon">
+          <img src="/icon.png" alt="PromptSanitizer" class="app-shell__logo-img" />
+        </div>
       </div>
 
       <!-- Control Sections -->
-      <div class="app-shell__controls">
+      <div class="app-shell__controls" v-show="!sidebarCollapsed">
         <!-- Config Panel (Always Visible) -->
         <div class="control-section">
           <div class="control-section__label">{{ t.configuration }}</div>
@@ -273,6 +298,8 @@ const i18n = {
   zh: {
     brandTitle: "提示词净化器",
     brandSubtitle: "隐私安全实验室",
+    collapseSidebar: "收起侧边栏",
+    expandSidebar: "展开侧边栏",
     operations: "操作",
     executeSanitize: "⚡ 执行净化",
     loadFile: "📁 加载文件",
@@ -301,6 +328,8 @@ const i18n = {
   en: {
     brandTitle: "PromptSanitizer",
     brandSubtitle: "Privacy Security Lab",
+    collapseSidebar: "Collapse Sidebar",
+    expandSidebar: "Expand Sidebar",
     operations: "Operations",
     executeSanitize: "⚡ Execute Sanitize",
     loadFile: "📁 Load File",
@@ -355,6 +384,11 @@ const config = ref<Config>({
 const viewMode = ref<"split" | "diff" | "report">("split");
 const theme = ref<"dark" | "light">("light");
 const filterCategory = ref<string>("all");
+const sidebarCollapsed = ref(false);
+
+const toggleSidebar = () => {
+  sidebarCollapsed.value = !sidebarCollapsed.value;
+};
 
 const categoryLabels: Record<string, string> = {
   phone: "Phone",
