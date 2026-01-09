@@ -22,6 +22,9 @@
         <button class="btn-ghost" @click="showConfig = !showConfig">
           {{ showConfig ? "隐藏配置" : "显示配置" }}
         </button>
+        <button class="btn-ghost" @click="toggleTheme">
+          {{ theme === "dark" ? "浅色主题" : "深色主题" }}
+        </button>
 
         <div style="flex: 1" />
 
@@ -181,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import MainPanel from "./components/MainPanel.vue";
 import ConfigPanel from "./components/ConfigPanel.vue";
@@ -211,6 +214,31 @@ const config = ref<Config>({
 });
 const showConfig = ref(false);
 const viewMode = ref<"split" | "diff" | "report">("split");
+const theme = ref<"dark" | "light">("dark");
+
+const applyTheme = (value: "dark" | "light") => {
+  const body = document.body;
+  body.classList.remove("theme-dark", "theme-light");
+  body.classList.add(value === "dark" ? "theme-dark" : "theme-light");
+};
+
+const toggleTheme = () => {
+  theme.value = theme.value === "dark" ? "light" : "dark";
+};
+
+onMounted(() => {
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches;
+  theme.value = prefersDark ? "dark" : "light";
+  applyTheme(theme.value);
+});
+
+watch(
+  theme,
+  (value) => {
+    applyTheme(value);
+  },
+  { flush: "post" }
+);
 
 const setOriginalText = (text: string) => {
   originalText.value = text;

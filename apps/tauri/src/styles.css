@@ -4,14 +4,100 @@
   box-sizing: border-box;
 }
 
+:root {
+  --font-size-base: 13.5px;
+}
+
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
     'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
     'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(circle at top left, #1f2937 0, #020617 45%, #020617 100%);
-  color: #e5e7eb;
+  font-size: var(--font-size-base);
+}
+
+/* 主题变量：通过在 body 上切换 theme-dark / theme-light 类控制 */
+body.theme-dark {
+  --bg-root: radial-gradient(circle at top left, #1f2937 0, #020617 45%, #020617 100%);
+  --color-text: #e5e7eb;
+
+  --card-bg: radial-gradient(circle at top left, rgba(15, 23, 42, 0.97), rgba(15, 23, 42, 0.92));
+  --card-bg-subtle: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+  --card-border: rgba(148, 163, 184, 0.55);
+  --card-shadow: 0 16px 45px rgba(15, 23, 42, 0.95);
+  --card-shadow-subtle: 0 12px 32px rgba(15, 23, 42, 0.9);
+
+  --shell-header-bg: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+  --shell-header-border: rgba(148, 163, 184, 0.5);
+
+  --btn-bg: radial-gradient(circle at top left, #1f2937, #020617);
+  --btn-color: #e5e7eb;
+  --btn-border: rgba(148, 163, 184, 0.6);
+  --btn-shadow: 0 10px 25px rgba(15, 23, 42, 0.65);
+  --btn-hover-border: rgba(248, 250, 252, 0.55);
+
+  --btn-primary-bg: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
+  --btn-primary-color: #020617;
+  --btn-primary-shadow: 0 16px 35px rgba(8, 47, 73, 0.95);
+
+  --btn-ghost-bg: transparent;
+  --btn-ghost-hover-bg: rgba(15, 23, 42, 0.9);
+  --btn-ghost-color: #e5e7eb;
+  --btn-ghost-border: rgba(148, 163, 184, 0.5);
+
+  --input-bg: rgba(15, 23, 42, 0.8);
+  --input-border: rgba(148, 163, 184, 0.5);
+  --input-color: #e5e7eb;
+  --input-focus-border: #38bdf8;
+
+  --table-head-bg: rgba(15, 23, 42, 0.96);
+  --table-row-alt-bg: rgba(15, 23, 42, 0.9);
+  --table-row-hover-bg: rgba(15, 23, 42, 0.95);
+}
+
+body.theme-light {
+  --bg-root: #f3f4f6;
+  --color-text: #111827;
+
+  --card-bg: #ffffff;
+  --card-bg-subtle: #f9fafb;
+  --card-border: rgba(209, 213, 219, 0.9);
+  --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+  --card-shadow-subtle: 0 8px 22px rgba(15, 23, 42, 0.08);
+
+  --shell-header-bg: rgba(255, 255, 255, 0.9);
+  --shell-header-border: rgba(209, 213, 219, 0.9);
+
+  --btn-bg: #f9fafb;
+  --btn-color: #111827;
+  --btn-border: rgba(209, 213, 219, 0.9);
+  --btn-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  --btn-hover-border: rgba(148, 163, 184, 1);
+
+  --btn-primary-bg: linear-gradient(to right, #0ea5e9, #6366f1);
+  --btn-primary-color: #f9fafb;
+  --btn-primary-shadow: 0 16px 30px rgba(37, 99, 235, 0.35);
+
+  --btn-ghost-bg: transparent;
+  --btn-ghost-hover-bg: rgba(15, 23, 42, 0.04);
+  --btn-ghost-color: #111827;
+  --btn-ghost-border: rgba(209, 213, 219, 0.9);
+
+  --input-bg: #ffffff;
+  --input-border: rgba(209, 213, 219, 0.9);
+  --input-color: #111827;
+  --input-focus-border: #38bdf8;
+
+  --table-head-bg: #f3f4f6;
+  --table-row-alt-bg: #f9fafb;
+  --table-row-hover-bg: #eff6ff;
+}
+
+body.theme-dark,
+body.theme-light {
+  background: var(--bg-root);
+  color: var(--color-text);
 }
 
 #root {
@@ -23,13 +109,13 @@ body {
 button {
   cursor: pointer;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
+  border: 1px solid var(--btn-border);
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 500;
-  background: radial-gradient(circle at top left, #1f2937, #020617);
-  color: #e5e7eb;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.65);
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  box-shadow: var(--btn-shadow);
   transition: all 0.18s ease-out;
   display: inline-flex;
   align-items: center;
@@ -40,7 +126,7 @@ button {
 button:hover {
   transform: translateY(-1px);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
-  border-color: rgba(248, 250, 252, 0.55);
+  border-color: var(--btn-hover-border);
 }
 
 button:active {
@@ -49,22 +135,22 @@ button:active {
 }
 
 input, textarea, select {
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   padding: 8px;
   font-size: 13px;
-  background: rgba(15, 23, 42, 0.8);
-  color: #e5e7eb;
+  background: var(--input-bg);
+  color: var(--input-color);
   transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out,
     background-color 0.15s ease-out;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: #38bdf8;
+  border-color: var(--input-focus-border);
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7),
     0 0 0 10px rgba(56, 189, 248, 0.15);
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--input-bg);
 }
 
 /* 应用壳与布局 */
@@ -73,7 +159,7 @@ input:focus, textarea:focus, select:focus {
   flex-direction: column;
   height: 100vh;
   padding: 18px 22px 20px;
-  color: #e5e7eb;
+  color: var(--color-text);
 }
 
 .app-shell__header {
@@ -82,8 +168,8 @@ input:focus, textarea:focus, select:focus {
   gap: 12px;
   padding: 10px 14px;
   border-radius: 999px;
-  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: var(--shell-header-bg);
+  border: 1px solid var(--shell-header-border);
   box-shadow: 0 14px 40px rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -148,10 +234,10 @@ input:focus, textarea:focus, select:focus {
 }
 
 .btn-primary {
-  background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
-  color: #020617;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-color);
   border-color: transparent;
-  box-shadow: 0 16px 35px rgba(8, 47, 73, 0.95);
+  box-shadow: var(--btn-primary-shadow);
 }
 
 .btn-primary:hover {
@@ -159,9 +245,9 @@ input:focus, textarea:focus, select:focus {
 }
 
 .btn-ghost {
-  background: transparent;
-  border-color: rgba(148, 163, 184, 0.5);
-  color: #e5e7eb;
+  background: var(--btn-ghost-bg);
+  border-color: var(--btn-ghost-border);
+  color: var(--btn-ghost-color);
   box-shadow: none;
 }
 
@@ -173,7 +259,7 @@ input:focus, textarea:focus, select:focus {
   min-width: 138px;
   border-radius: 999px;
   padding-inline: 12px;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--input-bg);
 }
 
 .app-shell__body {
@@ -197,16 +283,16 @@ input:focus, textarea:focus, select:focus {
 
 /* 通用卡片样式 */
 .card {
-  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.97), rgba(15, 23, 42, 0.92));
+  background: var(--card-bg);
   border-radius: 18px;
-  border: 1px solid rgba(148, 163, 184, 0.55);
-  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
 }
 
 .card--subtle {
-  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.9);
+  background: var(--card-bg-subtle);
+  box-shadow: var(--card-shadow-subtle);
 }
 
 .card__header {
@@ -248,7 +334,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .table-modern thead tr {
-  background: rgba(15, 23, 42, 0.96);
+  background: var(--table-head-bg);
 }
 
 .table-modern th,
@@ -258,9 +344,9 @@ input:focus, textarea:focus, select:focus {
 }
 
 .table-modern tbody tr:nth-child(2n) {
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--table-row-alt-bg);
 }
 
 .table-modern tbody tr:hover {
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--table-row-hover-bg);
 }

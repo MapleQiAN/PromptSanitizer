@@ -66,7 +66,7 @@
           padding: '12px',
           borderRadius: '12px',
           fontSize: '12px',
-          fontFamily: 'SF Mono, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace',
+          fontFamily: 'SF Mono, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
           resize: 'none',
           background: readOnly
             ? 'radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9))'
