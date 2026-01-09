@@ -213,7 +213,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
 import { useMessage } from "naive-ui";
-import { invoke } from "@tauri-apps/api/core";
 import MainPanel from "./MainPanel.vue";
 import ConfigPanel from "./ConfigPanel.vue";
 import FindingsList from "./FindingsList.vue";
@@ -221,6 +220,41 @@ import ReportView from "./ReportView.vue";
 import type { Config, Finding, Response } from "../types";
 
 const message = useMessage();
+
+// 动态导入 Tauri API，避免在非 Tauri 环境中出错
+let invokeFn: typeof import("@tauri-apps/api/core").invoke | null = null;
+let initPromise: Promise<void> | null = null;
+
+// 初始化 Tauri API（只初始化一次）
+const initTauri = async () => {
+  if (initPromise) {
+    return initPromise;
+  }
+  
+  initPromise = (async () => {
+    try {
+      if (typeof window !== "undefined") {
+        const tauriApi = await import("@tauri-apps/api/core");
+        invokeFn = tauriApi.invoke;
+      }
+    } catch (error) {
+      console.warn("Tauri API not available:", error);
+    }
+  })();
+  
+  return initPromise;
+};
+
+// 安全的 invoke 包装函数
+const invoke = async <T = any>(cmd: string, args?: any): Promise<T> => {
+  if (!invokeFn) {
+    await initTauri();
+  }
+  if (!invokeFn) {
+    throw new Error("Tauri API is not available. Please run the app using 'npm run tauri:dev' instead of 'npm run dev'");
+  }
+  return await invokeFn<T>(cmd, args);
+};
 
 // 语言配置
 type Language = "zh" | "en";
@@ -364,6 +398,10 @@ const getRiskColor = (score: number) => {
 };
 
 onMounted(() => {
+  // 初始化 Tauri API
+  initTauri();
+  
+  // 初始化主题
   const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches;
   theme.value = prefersDark ? "dark" : "light";
   applyTheme(theme.value, themeStyle.value);
