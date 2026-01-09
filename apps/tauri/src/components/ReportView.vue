@@ -1,150 +1,231 @@
 <template>
-  <div style="flex: 1; padding: 18px 18px 20px; overflow: auto">
+  <div style="display: flex; flex-direction: column; gap: 24px; height: 100%; overflow-y: auto; padding: 4px;">
+    <!-- Risk Score Hero -->
     <div
       style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-      "
-    >
-      <div>
-        <h2 style="font-size: 18px; margin-bottom: 4px">清洗报告</h2>
-        <div style="font-size: 12px; color: #9ca3af">
-          总览本次文本脱敏的整体风险与命中分布
-        </div>
-      </div>
-      <button class="btn-ghost" @click="handleExport" style="padding-inline: 14px">
-        导出 JSON
-      </button>
-    </div>
-
-    <!-- 风险评分 -->
-    <div
-      class="card"
-      style="
-        margin-bottom: 16px;
-        padding: 16px 18px;
-        border-width: 2px;
+        padding: 32px;
+        background: var(--color-bg-tertiary);
+        border: var(--border-thick) solid var(--color-border-heavy);
+        position: relative;
+        overflow: hidden;
       "
       :style="{ borderColor: riskInfo.color }"
     >
-      <div style="display: flex; align-items: center; gap: 18px">
+      <!-- Diagonal decoration -->
+      <div
+        style="
+          position: absolute;
+          top: -50%;
+          right: -10%;
+          width: 300px;
+          height: 300px;
+          opacity: 0.05;
+          transform: rotate(45deg);
+        "
+        :style="{ background: riskInfo.color }"
+      />
+      
+      <div style="display: flex; align-items: center; gap: 32px; position: relative; z-index: 1;">
+        <!-- Risk Score -->
         <div
+          style="
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 56px;
+            font-weight: 800;
+            border: var(--border-thick) solid;
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+          "
           :style="{
-            width: '72px',
-            height: '72px',
-            borderRadius: '999px',
-            border: `2px solid ${riskInfo.color}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '26px',
-            fontWeight: '700',
             color: riskInfo.color,
-            boxShadow: '0 0 30px rgba(15,23,42,0.9)',
+            borderColor: riskInfo.color,
+            boxShadow: `0 0 40px ${riskInfo.color}40`,
           }"
         >
           {{ response.risk_score }}
         </div>
-        <div>
-          <div style="font-size: 18px; font-weight: 600; margin-bottom: 4px">
-            {{ riskInfo.label }}
-          </div>
-          <div style="color: #9ca3af; font-size: 13px">
-            根据当前策略综合评估得到的文本泄露风险评分
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- 统计信息 -->
-    <div
-      class="card card--subtle"
-      style="
-        padding: 16px 18px 18px;
-        margin-bottom: 16px;
-      "
-    >
-      <h3 style="margin-bottom: 14px; font-size: 14px">统计信息</h3>
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px">
-        <div>
-          <div style="font-size: 22px; font-weight: 600">
-            {{ response.stats.total_findings }}
-          </div>
-          <div style="color: #9ca3af; font-size: 12px">总命中数</div>
-        </div>
-        <div>
-          <div style="font-size: 22px; font-weight: 600; color: #f97373">
-            {{ response.stats.high_risk_count }}
-          </div>
-          <div style="color: #9ca3af; font-size: 12px">高危</div>
-        </div>
-        <div>
-          <div style="font-size: 22px; font-weight: 600; color: #fb923c">
-            {{ response.stats.medium_risk_count }}
-          </div>
-          <div style="color: #9ca3af; font-size: 12px">中危</div>
-        </div>
-        <div>
-          <div style="font-size: 22px; font-weight: 600; color: #4ade80">
-            {{ response.stats.low_risk_count }}
-          </div>
-          <div style="color: #9ca3af; font-size: 12px">低危</div>
-        </div>
-      </div>
-
-      <div style="margin-top: 16px">
-        <h4 style="margin-bottom: 10px; font-size: 13px">按类别统计</h4>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px">
-          <div
-            v-for="[cat, count] in categoryEntries"
-            :key="cat"
+        <!-- Risk Info -->
+        <div style="flex: 1;">
+          <h2
             style="
-              display: flex;
-              justify-content: space-between;
-              padding: 8px 10px;
-              border-radius: 999px;
-              background: rgba(15, 23, 42, 0.92);
-              border: 1px solid rgba(31, 41, 55, 0.95);
-              font-size: 12px;
+              font-size: 32px;
+              font-weight: 800;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              margin-bottom: 8px;
             "
+            :style="{ color: riskInfo.color }"
           >
-            <span>{{ categoryLabels[cat] || cat }}</span>
-            <span style="font-weight: 600">{{ count }}</span>
-          </div>
+            {{ riskInfo.label }}
+          </h2>
+          <p style="color: var(--color-text-secondary); font-size: 13px; line-height: 1.6;">
+            Comprehensive risk assessment based on detected patterns, sensitivity levels, and potential exposure vectors.
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- 详细信息 -->
+    <!-- Statistics Grid -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+      <div
+        style="
+          padding: 20px;
+          background: var(--color-bg-tertiary);
+          border: var(--border-thin) solid var(--color-border);
+          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+        "
+      >
+        <div style="font-size: 36px; font-weight: 800; color: var(--color-text-primary); font-family: var(--font-mono);">
+          {{ response.stats.total_findings }}
+        </div>
+        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+          Total Findings
+        </div>
+      </div>
+
+      <div
+        style="
+          padding: 20px;
+          background: var(--color-bg-tertiary);
+          border: var(--border-thin) solid var(--color-border);
+          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+        "
+      >
+        <div style="font-size: 36px; font-weight: 800; color: var(--color-risk-high); font-family: var(--font-mono);">
+          {{ response.stats.high_risk_count }}
+        </div>
+        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+          High Risk
+        </div>
+      </div>
+
+      <div
+        style="
+          padding: 20px;
+          background: var(--color-bg-tertiary);
+          border: var(--border-thin) solid var(--color-border);
+          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+        "
+      >
+        <div style="font-size: 36px; font-weight: 800; color: var(--color-risk-medium); font-family: var(--font-mono);">
+          {{ response.stats.medium_risk_count }}
+        </div>
+        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+          Medium Risk
+        </div>
+      </div>
+
+      <div
+        style="
+          padding: 20px;
+          background: var(--color-bg-tertiary);
+          border: var(--border-thin) solid var(--color-border);
+          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+        "
+      >
+        <div style="font-size: 36px; font-weight: 800; color: var(--color-risk-low); font-family: var(--font-mono);">
+          {{ response.stats.low_risk_count }}
+        </div>
+        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-top: 8px; font-weight: 700;">
+          Low Risk
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Breakdown -->
     <div
-      class="card card--subtle"
       style="
-        padding: 16px 18px 18px;
+        padding: 24px;
+        background: var(--color-bg-tertiary);
+        border: var(--border-normal) solid var(--color-border);
       "
     >
-      <h3 style="margin-bottom: 12px; font-size: 14px">详细信息</h3>
-      <div style="font-size: 11px; color: #9ca3af; margin-bottom: 12px">
-        引擎版本: {{ response.version }}
+      <h3
+        style="
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--color-text-secondary);
+          margin-bottom: 20px;
+          font-weight: 800;
+        "
+      >
+        ◆ Category Distribution
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        <div
+          v-for="[cat, count] in categoryEntries"
+          :key="cat"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--color-bg-primary);
+            border: var(--border-thin) solid var(--color-border);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+          "
+        >
+          <span style="color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">
+            {{ categoryLabels[cat] || cat }}
+          </span>
+          <span style="color: var(--color-accent); font-weight: 700; font-size: 14px;">
+            {{ count }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Details -->
+    <div
+      style="
+        padding: 24px;
+        background: var(--color-bg-tertiary);
+        border: var(--border-normal) solid var(--color-border);
+      "
+    >
+      <h3
+        style="
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--color-text-secondary);
+          margin-bottom: 16px;
+          font-weight: 800;
+        "
+      >
+        ◆ Technical Report
+      </h3>
+      <div style="margin-bottom: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted);">
+        Engine Version: <span style="color: var(--color-accent); font-weight: 600;">{{ response.version }}</span>
       </div>
       <pre
         style="
-          background: radial-gradient(
-            circle at top left,
-            rgba(15, 23, 42, 0.96),
-            rgba(15, 23, 42, 0.92)
-          );
-          padding: 12px 14px;
-          border-radius: 12px;
-          border: 1px solid rgba(31, 41, 55, 0.95);
+          background: var(--color-bg-primary);
+          border: var(--border-thin) solid var(--color-border);
+          padding: 16px;
           overflow: auto;
+          font-family: var(--font-mono);
           font-size: 11px;
-          max-height: 380px;
+          line-height: 1.5;
+          max-height: 400px;
+          color: var(--color-text-secondary);
         "
-      >
-{{ JSON.stringify(response, null, 2) }}
-      </pre>
+      >{{ JSON.stringify(response, null, 2) }}</pre>
+    </div>
+
+    <!-- Export Button -->
+    <div style="display: flex; justify-content: flex-end;">
+      <button class="btn-action btn-action--primary" @click="handleExport" style="padding: 12px 32px;">
+        📥 Export Report (JSON)
+      </button>
     </div>
   </div>
 </template>
@@ -160,20 +241,20 @@ interface Props {
 const props = defineProps<Props>();
 
 const categoryLabels: Record<string, string> = {
-  phone: "手机号",
-  email: "邮箱",
-  id_card: "身份证",
-  ip: "IP地址",
-  domain: "域名/URL",
+  phone: "Phone",
+  email: "Email",
+  id_card: "ID Card",
+  ip: "IP Address",
+  domain: "Domain/URL",
   token: "Token/Key",
-  password: "密码",
-  private_key: "私钥",
+  password: "Password",
+  private_key: "Private Key",
 };
 
 const getRiskLevel = (score: number) => {
-  if (score >= 70) return { label: "高危", color: "#f44336" };
-  if (score >= 40) return { label: "中危", color: "#ff9800" };
-  return { label: "低危", color: "#4caf50" };
+  if (score >= 70) return { label: "High Risk", color: "var(--color-risk-high)" };
+  if (score >= 40) return { label: "Medium Risk", color: "var(--color-risk-medium)" };
+  return { label: "Low Risk", color: "var(--color-risk-low)" };
 };
 
 const riskInfo = computed(() => getRiskLevel(props.response.risk_score));
@@ -183,12 +264,10 @@ const categoryEntries = computed(() => {
 });
 
 const handleExport = () => {
-  // 创建安全的报告（不包含完整敏感内容）
   const safeReport = {
     ...props.response,
     findings: props.response.findings.map((f) => ({
       ...f,
-      // 不包含原始文本，只保留预览
     })),
   };
 

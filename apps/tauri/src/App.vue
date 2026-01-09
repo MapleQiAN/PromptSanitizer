@@ -1,190 +1,219 @@
 <template>
-  <div class="app-shell">
-    <!-- 顶部工具栏 / 品牌栏 -->
-    <header class="app-shell__header">
-      <div class="app-shell__brand">
-        <div class="app-shell__avatar">
-          <div class="app-shell__avatar-inner">PS</div>
-        </div>
-        <div class="app-shell__title">
-          <span class="app-shell__title-main">PromptSanitizer</span>
-          <span class="app-shell__title-sub">专注于智能脱敏与合规检查</span>
-        </div>
-      </div>
-
-      <div class="app-shell__header-divider" />
-
-      <div class="app-shell__toolbar">
-        <button class="btn-primary" @click="handleSanitize">
-          一键清洗
-        </button>
-        <button class="btn-ghost" @click="handleLoadFile">导入文件</button>
-        <button class="btn-ghost" @click="showConfig = !showConfig">
-          {{ showConfig ? "隐藏配置" : "显示配置" }}
-        </button>
-        <button class="btn-ghost" @click="toggleTheme">
-          {{ theme === "dark" ? "浅色主题" : "深色主题" }}
-        </button>
-
-        <div style="flex: 1" />
-
-        <select
-          class="select-pill"
-          :value="viewMode"
-          @change="(e) => (viewMode = (e.target as HTMLSelectElement).value as any)"
-        >
-          <option value="split">分栏视图</option>
-          <option value="diff">对比视图</option>
-          <option value="report">报告视图</option>
-        </select>
-      </div>
-    </header>
-
-    <main class="app-shell__body">
-      <!-- 配置面板 -->
-      <section v-if="showConfig" class="card card--subtle">
-        <div class="card__body">
-          <ConfigPanel :config="config" :onChange="setConfig" />
-        </div>
-      </section>
-
-      <!-- 主内容区 -->
-      <section class="app-shell__main">
-        <template v-if="viewMode === 'split'">
-          <div style="flex: 1" class="card card--subtle">
-            <MainPanel
-              title="原文"
-              :text="originalText"
-              :onChange="setOriginalText"
-              :findings="findings"
-              :highlightMode="config.mode === 'annotate'"
-            />
+  <n-config-provider :theme="naiveTheme">
+    <div class="app-shell">
+      <!-- ============================================
+           LEFT SIDEBAR - Control Panel
+           ============================================ -->
+      <aside class="app-shell__sidebar">
+        <!-- Brand / Logo -->
+        <div class="app-shell__brand">
+          <div class="app-shell__logo">
+            <div class="app-shell__logo-mark">PS</div>
+            <div class="app-shell__logo-text">
+              <div class="app-shell__title">PromptSanitizer</div>
+              <div class="app-shell__subtitle">Privacy Security Lab</div>
+            </div>
           </div>
-          <div style="width: 1px; background: rgba(30, 64, 175, 0.4)" />
-          <div style="flex: 1" class="card card--subtle">
-            <MainPanel
-              title="清洗结果"
-              :text="sanitizedText"
-              :readOnly="true"
-              :findings="findings"
-            />
+        </div>
+
+        <!-- Control Sections -->
+        <div class="app-shell__controls">
+          <!-- Primary Actions -->
+          <div class="control-section">
+            <div class="control-section__label">Operations</div>
+            <button class="btn-action btn-action--primary" @click="handleSanitize">
+              ⚡ Execute Sanitize
+            </button>
+            <button class="btn-action" @click="handleLoadFile" style="margin-top: 12px">
+              📁 Load File
+            </button>
+          </div>
+
+          <!-- Configuration Toggle -->
+          <div class="control-section">
+            <div class="control-section__label">Configuration</div>
+            <button class="btn-action" @click="showConfig = !showConfig">
+              {{ showConfig ? '⊗ Hide Config' : '⊕ Show Config' }}
+            </button>
+          </div>
+
+          <!-- Config Panel (Collapsible) -->
+          <div v-if="showConfig" class="control-section">
+            <ConfigPanel :config="config" :onChange="setConfig" />
+          </div>
+
+          <!-- Statistics (if available) -->
+          <div v-if="findings.length > 0" class="control-section">
+            <div class="control-section__label">Statistics</div>
+            <div style="padding: 12px; background: var(--color-bg-tertiary); border: 1px solid var(--color-border); font-family: var(--font-mono); font-size: 12px; line-height: 1.8;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--color-text-muted);">Total Findings:</span>
+                <span style="color: var(--color-accent); font-weight: 700;">{{ findings.length }}</span>
+              </div>
+              <div v-if="response" style="display: flex; justify-content: space-between; margin-top: 6px;">
+                <span style="color: var(--color-text-muted);">Risk Score:</span>
+                <span :style="{ color: getRiskColor(response.risk_score), fontWeight: 700 }">
+                  {{ response.risk_score }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ============================================
+           HEADER BAR - View Controls
+           ============================================ -->
+      <header class="app-shell__header">
+        <div class="view-switcher">
+          <button
+            class="view-switcher__btn"
+            :class="{ 'view-switcher__btn--active': viewMode === 'split' }"
+            @click="viewMode = 'split'"
+          >
+            [Split]
+          </button>
+          <button
+            class="view-switcher__btn"
+            :class="{ 'view-switcher__btn--active': viewMode === 'diff' }"
+            @click="viewMode = 'diff'"
+          >
+            [Diff]
+          </button>
+          <button
+            class="view-switcher__btn"
+            :class="{ 'view-switcher__btn--active': viewMode === 'report' }"
+            @click="viewMode = 'report'"
+          >
+            [Report]
+          </button>
+        </div>
+
+        <button class="theme-toggle" @click="toggleTheme">
+          {{ theme === 'dark' ? '◐ DARK' : '◑ LIGHT' }}
+        </button>
+      </header>
+
+      <!-- ============================================
+           MAIN CONTENT AREA
+           ============================================ -->
+      <main class="app-shell__main">
+        <!-- Split View: Original + Sanitized -->
+        <template v-if="viewMode === 'split'">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">◆ Original Text</h2>
+            </div>
+            <div class="panel__body">
+              <MainPanel
+                title="Original"
+                :text="originalText"
+                :onChange="setOriginalText"
+                :findings="findings"
+                :highlightMode="config.mode === 'annotate'"
+              />
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">◆ Sanitized Output</h2>
+            </div>
+            <div class="panel__body">
+              <MainPanel
+                title="Sanitized"
+                :text="sanitizedText"
+                :readOnly="true"
+                :findings="findings"
+              />
+            </div>
           </div>
         </template>
 
-        <section
-          v-if="viewMode === 'diff'"
-          class="card card--subtle"
-          style="flex: 1; overflow: hidden"
-        >
-          <div class="card__header">
-            <div class="card__title">前后对比</div>
-            <span class="badge-soft">查看脱敏前后差异</span>
+        <!-- Diff View -->
+        <div v-if="viewMode === 'diff'" class="panel" style="flex: 1;">
+          <div class="panel__header">
+            <h2 class="panel__title">◆ Side-by-Side Comparison</h2>
           </div>
-          <div
-            class="card__body"
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 14px;
-              height: 100%;
-            "
+          <div class="panel__body">
+            <div style="display: grid; grid-template-columns: 1fr 4px 1fr; gap: 20px; height: 100%;">
+              <div style="display: flex; flex-direction: column;">
+                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-bottom: 12px; font-weight: 700;">
+                  ▸ Before
+                </div>
+                <pre class="text-editor" readonly style="flex: 1;">{{ originalText || '(Empty)' }}</pre>
+              </div>
+              
+              <div style="width: 4px; background: linear-gradient(to bottom, transparent, var(--color-accent) 50%, transparent); opacity: 0.3;"></div>
+              
+              <div style="display: flex; flex-direction: column;">
+                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-bottom: 12px; font-weight: 700;">
+                  ▸ After
+                </div>
+                <pre class="text-editor" readonly style="flex: 1;">{{ sanitizedText || '(Empty)' }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Report View -->
+        <div v-if="viewMode === 'report' && response" class="panel" style="flex: 1;">
+          <div class="panel__header">
+            <h2 class="panel__title">◆ Security Analysis Report</h2>
+          </div>
+          <div class="panel__body">
+            <ReportView :response="response" />
+          </div>
+        </div>
+
+        <!-- Empty State for Report -->
+        <div v-if="viewMode === 'report' && !response" class="panel" style="flex: 1;">
+          <div class="panel__body" style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: var(--color-text-muted);">
+            <div style="font-size: 48px; opacity: 0.3;">⚠</div>
+            <div style="font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">
+              No report available
+            </div>
+            <div style="font-size: 11px;">
+              Execute sanitization to generate a security report
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ============================================
+           FOOTER - Findings List
+           ============================================ -->
+      <footer v-if="findings.length > 0" class="app-shell__footer">
+        <div class="findings-header">
+          <div class="findings-title">
+            <span>Detection Results</span>
+            <span class="findings-count">{{ findings.length }}</span>
+          </div>
+          <select
+            v-model="filterCategory"
+            style="padding: 6px 12px; font-size: 11px; min-width: 140px;"
           >
-            <div style="display: flex; flex-direction: column; min-width: 0">
-              <div
-                style="
-                  font-size: 12px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.06em;
-                  color: #9ca3af;
-                  margin-bottom: 6px;
-                "
-              >
-                原文
-              </div>
-              <pre
-                style="
-                  flex: 1;
-                  background: radial-gradient(
-                    circle at top left,
-                    rgba(15, 23, 42, 0.96),
-                    rgba(15, 23, 42, 0.92)
-                  );
-                  padding: 12px;
-                  border-radius: 12px;
-                  border: 1px solid rgba(31, 41, 55, 0.95);
-                  white-space: pre-wrap;
-                  font-size: 12px;
-                  line-height: 1.6;
-                  color: #e5e7eb;
-                  overflow: auto;
-                "
-              >
-{{ originalText || "(空)" }}
-              </pre>
-            </div>
-            <div style="display: flex; flex-direction: column; min-width: 0">
-              <div
-                style="
-                  font-size: 12px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.06em;
-                  color: #9ca3af;
-                  margin-bottom: 6px;
-                "
-              >
-                清洗后
-              </div>
-              <pre
-                style="
-                  flex: 1;
-                  background: radial-gradient(
-                    circle at top left,
-                    rgba(15, 23, 42, 0.96),
-                    rgba(15, 23, 42, 0.92)
-                  );
-                  padding: 12px;
-                  border-radius: 12px;
-                  border: 1px solid rgba(31, 41, 55, 0.95);
-                  white-space: pre-wrap;
-                  font-size: 12px;
-                  line-height: 1.6;
-                  color: #e5e7eb;
-                  overflow: auto;
-                "
-              >
-{{ sanitizedText || "(空)" }}
-              </pre>
-            </div>
-          </div>
-        </section>
-
-        <section
-          v-if="viewMode === 'report' && response"
-          class="card card--subtle"
-          style="flex: 1; overflow: hidden"
-        >
-          <ReportView :response="response" />
-        </section>
-      </section>
-
-      <!-- 底部命中列表 -->
-      <footer class="app-shell__footer">
-        <FindingsList
-          v-if="findings.length > 0"
-          :findings="findings"
-          :originalText="originalText"
-          :onJump="(start, end) => {
-            // 滚动到指定位置（简化实现）
-            console.log('跳转到:', start, end);
-          }"
-        />
+            <option value="all">All Categories</option>
+            <option v-for="cat in categories" :key="cat" :value="cat">
+              {{ categoryLabels[cat] || cat }}
+            </option>
+          </select>
+        </div>
+        <div class="findings-list">
+          <FindingsList
+            :findings="filteredFindings"
+            :originalText="originalText"
+            :onJump="(start, end) => console.log('Jump to:', start, end)"
+          />
+        </div>
       </footer>
-    </main>
-  </div>
+    </div>
+  </n-config-provider>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
+import { darkTheme, type GlobalTheme } from "naive-ui";
 import { invoke } from "@tauri-apps/api/core";
 import MainPanel from "./components/MainPanel.vue";
 import ConfigPanel from "./components/ConfigPanel.vue";
@@ -215,6 +244,28 @@ const config = ref<Config>({
 const showConfig = ref(false);
 const viewMode = ref<"split" | "diff" | "report">("split");
 const theme = ref<"dark" | "light">("dark");
+const filterCategory = ref<string>("all");
+
+const categoryLabels: Record<string, string> = {
+  phone: "Phone",
+  email: "Email",
+  id_card: "ID Card",
+  ip: "IP Address",
+  domain: "Domain/URL",
+  token: "Token/Key",
+  password: "Password",
+  private_key: "Private Key",
+};
+
+const categories = computed(() => {
+  return Array.from(new Set(findings.value.map((f) => f.type)));
+});
+
+const filteredFindings = computed(() => {
+  return filterCategory.value === "all"
+    ? findings.value
+    : findings.value.filter((f) => f.type === filterCategory.value);
+});
 
 const applyTheme = (value: "dark" | "light") => {
   const body = document.body;
@@ -224,6 +275,16 @@ const applyTheme = (value: "dark" | "light") => {
 
 const toggleTheme = () => {
   theme.value = theme.value === "dark" ? "light" : "dark";
+};
+
+const naiveTheme = computed<GlobalTheme | null>(() =>
+  theme.value === "dark" ? darkTheme : null
+);
+
+const getRiskColor = (score: number) => {
+  if (score >= 70) return "var(--color-risk-high)";
+  if (score >= 40) return "var(--color-risk-medium)";
+  return "var(--color-risk-low)";
 };
 
 onMounted(() => {
@@ -250,7 +311,7 @@ const setConfig = (newConfig: Config) => {
 
 const handleSanitize = async () => {
   if (!originalText.value.trim()) {
-    alert("请输入要清洗的文本");
+    alert("Please input text to sanitize");
     return;
   }
 
@@ -271,8 +332,8 @@ const handleSanitize = async () => {
     sanitizedText.value = result.sanitized_text;
     findings.value = result.findings;
   } catch (error) {
-    console.error("清洗失败:", error);
-    alert(`清洗失败: ${error}`);
+    console.error("Sanitization failed:", error);
+    alert(`Sanitization failed: ${error}`);
   }
 };
 
@@ -284,7 +345,7 @@ const handleLoadFile = async () => {
       originalText.value = content;
     }
   } catch (error) {
-    console.error("加载文件失败:", error);
+    console.error("Failed to load file:", error);
   }
 };
 </script>

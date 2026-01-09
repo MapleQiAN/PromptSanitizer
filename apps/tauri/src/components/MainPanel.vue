@@ -1,104 +1,81 @@
 <template>
-  <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden">
-    <div class="card__header">
-      <div class="card__title">
-        {{ title }}
-      </div>
-      <span v-if="highlightMode" class="badge-soft">
-        高亮命中片段
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <!-- Badge/Status -->
+    <div v-if="highlightMode" style="margin-bottom: 16px;">
+      <span class="badge">
+        ⚠ Highlight Mode Active
       </span>
     </div>
-    <div class="card__body" style="flex: 1; overflow: auto">
+
+    <!-- Highlighted View -->
+    <div
+      v-if="highlightMode && findings.length > 0"
+      class="highlight-view"
+      style="
+        flex: 1;
+        padding: 20px;
+        background: var(--color-bg-tertiary);
+        border: var(--border-thin) solid var(--color-border);
+        overflow: auto;
+      "
+    >
+      <span
+        v-for="(part, i) in highlightedParts"
+        :key="i"
+        :class="{
+          'highlight': part.isFinding,
+          'highlight--high': part.isFinding && part.risk && part.risk >= 70,
+          'highlight--low': part.isFinding && part.risk && part.risk < 40,
+        }"
+      >
+        {{ part.text }}
+      </span>
+    </div>
+
+    <!-- Text Editor -->
+    <textarea
+      v-else
+      ref="textareaRef"
+      :value="text"
+      @input="handleInput"
+      :readonly="readOnly"
+      :placeholder="readOnly ? 'Sanitized output will appear here...' : 'Input or paste text for privacy sanitization...'"
+      class="text-editor"
+      :style="{ flex: 1 }"
+    />
+
+    <!-- Action Bar -->
+    <div
+      v-if="text"
+      style="
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: var(--border-thin) solid var(--color-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      "
+    >
+      <button
+        class="btn-action"
+        @click="handleCopy"
+        style="padding: 8px 20px; font-size: 11px;"
+      >
+        📋 Copy {{ readOnly ? 'Output' : 'Text' }}
+      </button>
       <div
-        v-if="highlightMode && findings.length > 0"
+        v-if="text"
         style="
-          padding: 12px;
-          background: radial-gradient(
-            circle at top left,
-            rgba(15, 23, 42, 0.96),
-            rgba(15, 23, 42, 0.92)
-          );
-          border-radius: 12px;
-          border: 1px solid rgba(31, 41, 55, 0.95);
-          min-height: 200px;
-          font-size: 12px;
-          line-height: 1.6;
-          white-space: pre-wrap;
+          font-family: var(--font-mono);
+          font-size: 10px;
+          color: var(--color-text-muted);
+          display: flex;
+          align-items: center;
+          padding: 0 8px;
         "
       >
-        <span
-          v-for="(part, i) in highlightedParts"
-          :key="i"
-          :style="{
-            background:
-              part.isFinding && part.risk
-                ? part.risk >= 70
-                  ? 'rgba(248, 113, 113, 0.16)'
-                  : part.risk >= 40
-                  ? 'rgba(251, 191, 36, 0.16)'
-                  : 'rgba(56, 189, 248, 0.14)'
-                : 'transparent',
-            padding: part.isFinding ? '1px 4px' : '0',
-            borderRadius: part.isFinding ? '999px' : '0',
-            border: part.isFinding
-              ? part.risk && part.risk >= 70
-                ? '1px solid rgba(248, 113, 113, 0.4)'
-                : part.risk && part.risk >= 40
-                ? '1px solid rgba(251, 191, 36, 0.4)'
-                : '1px solid rgba(56, 189, 248, 0.5)'
-              : 'none',
-          }"
-        >
-          {{ part.text }}
-        </span>
+        {{ text.length }} chars
       </div>
-      <textarea
-        v-else
-        ref="textareaRef"
-        :value="text"
-        @input="handleInput"
-        :readonly="readOnly"
-        placeholder="在此输入或粘贴文本..."
-        :style="{
-          width: '100%',
-          height: '100%',
-          minHeight: '340px',
-          padding: '12px',
-          borderRadius: '12px',
-          fontSize: '12px',
-          fontFamily: 'SF Mono, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
-          resize: 'none',
-          background: readOnly
-            ? 'radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9))'
-            : 'radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.92))',
-          border: '1px solid rgba(31, 41, 55, 0.95)',
-          color: '#e5e7eb',
-        }"
-      />
-    </div>
-    <div
-      v-if="!readOnly"
-      style="
-        padding: 8px 16px 10px;
-        border-top: 1px solid rgba(31, 41, 55, 0.95);
-        display: flex;
-        justify-content: flex-end;
-      "
-    >
-      <button class="btn-ghost" @click="handleCopy" :disabled="!text">
-        复制
-      </button>
-    </div>
-    <div
-      v-if="readOnly && text"
-      style="
-        padding: 8px 16px 10px;
-        border-top: 1px solid rgba(31, 41, 55, 0.95);
-        display: flex;
-        justify-content: flex-end;
-      "
-    >
-      <button class="btn-ghost" @click="handleCopy">复制结果</button>
     </div>
   </div>
 </template>
@@ -132,7 +109,6 @@ const highlightedParts = computed(() => {
   const parts: Array<{ text: string; isFinding: boolean; risk?: number }> = [];
   let lastIndex = 0;
 
-  // 按位置排序
   const sortedFindings = [...props.findings].sort((a, b) => a.start - b.start);
 
   sortedFindings.forEach((finding) => {
