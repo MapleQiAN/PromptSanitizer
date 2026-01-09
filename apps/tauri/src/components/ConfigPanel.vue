@@ -2,45 +2,45 @@
   <div style="display: flex; flex-direction: column; gap: 20px;">
     <!-- Processing Mode -->
     <div>
-      <label>Mode</label>
+      <label>{{ t.mode }}</label>
       <select
         :value="config.mode"
         @change="(e) => updateConfig({ mode: (e.target as HTMLSelectElement).value as any })"
       >
-        <option value="sanitize">Sanitize</option>
-        <option value="annotate">Annotate</option>
+        <option value="sanitize">{{ t.sanitize }}</option>
+        <option value="annotate">{{ t.annotate }}</option>
       </select>
     </div>
 
     <!-- Strategy -->
     <div>
-      <label>Strategy</label>
+      <label>{{ t.strategy }}</label>
       <select
         :value="config.strategy"
         @change="(e) => updateConfig({ strategy: (e.target as HTMLSelectElement).value as any })"
       >
-        <option value="redact">Redact (Placeholder)</option>
-        <option value="mask">Mask (Partial)</option>
-        <option value="pseudonym">Pseudonym (Consistent)</option>
+        <option value="redact">{{ t.redact }}</option>
+        <option value="mask">{{ t.mask }}</option>
+        <option value="pseudonym">{{ t.pseudonym }}</option>
       </select>
     </div>
 
     <!-- Detection Level -->
     <div>
-      <label>Detection Level</label>
+      <label>{{ t.level }}</label>
       <select
         :value="config.level"
         @change="(e) => updateConfig({ level: (e.target as HTMLSelectElement).value as any })"
       >
-        <option value="lenient">Lenient</option>
-        <option value="standard">Standard</option>
-        <option value="strict">Strict</option>
+        <option value="lenient">{{ t.lenient }}</option>
+        <option value="standard">{{ t.standard }}</option>
+        <option value="strict">{{ t.strict }}</option>
       </select>
     </div>
 
     <!-- Category Toggles -->
     <div>
-      <label>Detection Categories</label>
+      <label>{{ t.categories }}</label>
       <div
         style="
           display: grid;
@@ -76,11 +76,11 @@
 
     <!-- Allowlist -->
     <div>
-      <label>Allowlist (one per line)</label>
+      <label>{{ t.allowlist }}</label>
       <textarea
         :value="config.allowlist.join('\n')"
         @input="(e) => updateConfig({ allowlist: (e.target as HTMLTextAreaElement).value.split('\n').filter((s) => s.trim()) })"
-        placeholder="Enter strings to exclude..."
+        :placeholder="t.allowlistPlaceholder"
         style="
           width: 100%;
           min-height: 80px;
@@ -101,7 +101,7 @@
 
     <!-- Font Size -->
     <div>
-      <label>Font Size (px)</label>
+      <label>{{ t.fontSize }}</label>
       <input
         type="number"
         :value="config.fontSize || 16"
@@ -125,25 +125,90 @@
 </template>
 
 <script setup lang="ts">
+import { computed, toRef } from "vue";
 import type { Config } from "../types";
+
+type Language = "zh" | "en";
 
 interface Props {
   config: Config;
   onChange: (config: Config) => void;
+  lang?: Language;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  lang: "zh",
+});
 
-const categories = [
-  { id: "phone", label: "Phone" },
-  { id: "email", label: "Email" },
-  { id: "id_card", label: "ID Card" },
-  { id: "ip", label: "IP Address" },
-  { id: "domain", label: "Domain/URL" },
-  { id: "token", label: "Token/Key" },
-  { id: "password", label: "Password" },
-  { id: "private_key", label: "Private Key" },
-];
+// 使用 toRef 确保响应式追踪
+const langRef = toRef(props, "lang");
+
+const i18n = {
+  zh: {
+    mode: "处理模式",
+    sanitize: "净化",
+    annotate: "标注",
+    strategy: "处理策略",
+    redact: "遮蔽（占位符）",
+    mask: "掩码（部分）",
+    pseudonym: "假名（一致）",
+    level: "检测级别",
+    lenient: "宽松",
+    standard: "标准",
+    strict: "严格",
+    categories: "检测类别",
+    allowlist: "白名单（每行一个）",
+    allowlistPlaceholder: "输入要排除的字符串...",
+    fontSize: "字体大小 (px)",
+    phone: "电话",
+    email: "邮箱",
+    id_card: "身份证",
+    ip: "IP地址",
+    domain: "域名/URL",
+    token: "令牌/密钥",
+    password: "密码",
+    private_key: "私钥",
+  },
+  en: {
+    mode: "Mode",
+    sanitize: "Sanitize",
+    annotate: "Annotate",
+    strategy: "Strategy",
+    redact: "Redact (Placeholder)",
+    mask: "Mask (Partial)",
+    pseudonym: "Pseudonym (Consistent)",
+    level: "Detection Level",
+    lenient: "Lenient",
+    standard: "Standard",
+    strict: "Strict",
+    categories: "Detection Categories",
+    allowlist: "Allowlist (one per line)",
+    allowlistPlaceholder: "Enter strings to exclude...",
+    fontSize: "Font Size (px)",
+    phone: "Phone",
+    email: "Email",
+    id_card: "ID Card",
+    ip: "IP Address",
+    domain: "Domain/URL",
+    token: "Token/Key",
+    password: "Password",
+    private_key: "Private Key",
+  },
+};
+
+// 使用 langRef.value 确保响应式更新
+const t = computed(() => i18n[langRef.value]);
+
+const categories = computed(() => [
+  { id: "phone", label: t.value.phone },
+  { id: "email", label: t.value.email },
+  { id: "id_card", label: t.value.id_card },
+  { id: "ip", label: t.value.ip },
+  { id: "domain", label: t.value.domain },
+  { id: "token", label: t.value.token },
+  { id: "password", label: t.value.password },
+  { id: "private_key", label: t.value.private_key },
+]);
 
 const toggleCategory = (categoryId: string) => {
   const enabled = props.config.enabledCategories.includes(categoryId);
