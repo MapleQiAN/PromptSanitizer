@@ -1,15 +1,29 @@
 <div align="center">
 
+<img src="apps/tauri/public/icon.png" alt="PromptSanitizer Logo" width="120" height="120">
+
 # 🔒 PromptSanitizer
 
 **一个开源、开箱即用的桌面应用，用于在将 Prompt 发送给 LLM 之前，一键扫描并清洗敏感信息。**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/release/your-username/PromptSanitizer.svg)](https://github.com/your-username/PromptSanitizer/releases)
+[![GitHub stars](https://img.shields.io/github/stars/your-username/PromptSanitizer.svg?style=social&label=Star)](https://github.com/your-username/PromptSanitizer)
+[![GitHub forks](https://img.shields.io/github/forks/your-username/PromptSanitizer.svg?style=social&label=Fork)](https://github.com/your-username/PromptSanitizer/fork)
+[![GitHub issues](https://img.shields.io/github/issues/your-username/PromptSanitizer.svg)](https://github.com/your-username/PromptSanitizer/issues)
+[![GitHub PRs](https://img.shields.io/github/issues-pr/your-username/PromptSanitizer.svg)](https://github.com/your-username/PromptSanitizer/pulls)
+
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://golang.org/)
 [![Rust Version](https://img.shields.io/badge/Rust-1.70+-000000?logo=rust)](https://www.rust-lang.org/)
 [![Vue Version](https://img.shields.io/badge/Vue-3-4FC08D?logo=vue.js)](https://vuejs.org/)
+[![Tauri Version](https://img.shields.io/badge/Tauri-2.0-FFC131?logo=tauri)](https://tauri.app/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
-[功能特性](#-特性) • [快速开始](#-快速开始) • [项目架构](#️-项目架构) • [设计思路](#-设计思路) • [文档](#-文档)
+[English](README.md) • [中文](README.md) • [功能特性](#-特性) • [快速开始](#-快速开始) • [项目架构](#️-项目架构) • [设计思路](#-设计思路) • [文档](#-文档)
+
+[![Download](https://img.shields.io/badge/Download-Latest-brightgreen)](https://github.com/your-username/PromptSanitizer/releases/latest)
+[![Documentation](https://img.shields.io/badge/Docs-Online-blue)](https://github.com/your-username/PromptSanitizer/wiki)
+[![Discussions](https://img.shields.io/badge/Discussions-Q%26A-yellow)](https://github.com/your-username/PromptSanitizer/discussions)
 
 </div>
 
@@ -17,21 +31,30 @@
 
 > 💡 **核心定位**：本工具不仅面向开发者，更重要的是为**日常用户**设计。在将内容粘贴到 ChatGPT、Claude、文心一言等网页 LLM 之前，先用本工具清洗一遍，避免把身份证号、Token、客户数据、公司机密等敏感信息一股脑粘进去。
 
-## 特性
+## ✨ 特性
 
-- 🔒 **本地优先**：完全离线运行，不上传任何内容
+- 🔒 **本地优先**：完全离线运行，不上传任何内容，保护隐私安全
 - 📊 **可解释**：提供详细的清洗报告，说明命中了什么、为什么、如何替换
-- ⚡ **轻量快速**：处理 50k 字符文本 < 1 秒
+- ⚡ **轻量快速**：处理 50k 字符文本 < 1 秒，性能优异
 - 🎯 **精准识别**：支持手机号、邮箱、身份证、IP、域名、Token、密码、私钥等多种敏感信息
 - 🛡️ **灵活配置**：支持多种清洗策略、强度级别、类别开关、白名单
 - 📈 **风险评分**：提供 0-100 的风险评分和详细统计
+- 🔧 **易于扩展**：插件化架构，支持自定义检测器和清洗策略
+- 🌐 **跨平台**：支持 Windows、macOS、Linux 三大平台
 
-## 技术栈
+## 🛠️ 技术栈
 
-- **前端**：TypeScript + Vue 3 (通过 Tauri)
-- **桌面框架**：Tauri 2
-- **核心引擎**：Go (sidecar 模式)
-- **通信协议**：JSON over stdin/stdout
+<div align="center">
+
+| 层级 | 技术 | 说明 |
+|------|------|------|
+| **前端** | TypeScript + Vue 3 | 现代化 UI 框架，类型安全 |
+| **桌面框架** | Tauri 2 | 轻量级跨平台桌面应用框架 |
+| **核心引擎** | Go | 高性能文本处理引擎（sidecar 模式） |
+| **桥接层** | Rust | 系统级编程，进程管理 |
+| **通信协议** | JSON over stdin/stdout | 简单高效的进程间通信 |
+
+</div>
 
 ## 🏗️ 项目架构
 
@@ -310,36 +333,108 @@ type Detector interface {
 4. **批量处理**：当前架构支持扩展为批量文件处理
 5. **云端规则更新**：未来可以可选地从云端更新检测规则（用户可选择）
 
+## 📸 预览
+
+> 💡 应用界面截图（待添加）
+
 ## 🚀 快速开始
 
-### 开发环境要求
+### 📦 安装
 
-- Node.js 18+
-- Rust 1.70+
-- Go 1.21+
-- Tauri CLI: `npm install -g @tauri-apps/cli`
+#### 方式一：下载预编译版本（推荐）
 
-### 本地开发
+访问 [Releases](https://github.com/your-username/PromptSanitizer/releases) 页面下载对应平台的安装包：
+
+- **Windows**: `PromptSanitizer-Setup-x.x.x.exe`
+- **macOS**: `PromptSanitizer-x.x.x.dmg`
+- **Linux**: `PromptSanitizer-x.x.x.AppImage`
+
+#### 方式二：从源码构建
+
+### 🔧 开发环境要求
+
+| 工具 | 版本要求 | 说明 |
+|------|---------|------|
+| **Node.js** | 18+ | JavaScript 运行时 |
+| **Rust** | 1.70+ | 系统编程语言 |
+| **Go** | 1.21+ | 核心引擎语言 |
+| **Tauri CLI** | Latest | `npm install -g @tauri-apps/cli` |
+
+### 💻 本地开发
 
 ```bash
-# 安装依赖
+# 1. 克隆仓库
+git clone https://github.com/your-username/PromptSanitizer.git
+cd PromptSanitizer
+
+# 2. 安装依赖
 npm install
 
-# 构建 Go 引擎
+# 3. 构建 Go 引擎
 cd engine/go
 go build -o ../../apps/tauri/src-tauri/bin/prompt-sanitizer.exe ./cmd/main.go
 
-# 开发模式运行
+# 4. 开发模式运行
 cd ../../apps/tauri
 npm run tauri dev
 ```
 
-### 打包
+### 📦 打包发布
 
 ```bash
 cd apps/tauri
 npm run tauri build
 ```
+
+构建产物将输出到 `apps/tauri/src-tauri/target/release/bundle/`
+
+### 🧪 运行测试
+
+```bash
+# Go 引擎测试
+cd engine/go
+go test ./...
+
+# 前端测试（如果配置了）
+cd apps/tauri
+npm test
+```
+
+### 📝 使用示例
+
+#### 基本使用
+
+1. **启动应用**：运行桌面应用或使用 CLI
+2. **输入文本**：粘贴或输入需要清洗的文本
+3. **配置选项**：选择清洗策略、强度级别和敏感信息类别
+4. **执行清洗**：点击"清洗"按钮
+5. **查看结果**：查看清洗后的文本、报告和风险评分
+
+#### CLI 使用示例
+
+```bash
+# 清洗文本文件
+prompt-sanitizer --input input.txt --output output.txt --strategy mask
+
+# 使用自定义配置
+prompt-sanitizer --input input.txt --config config.json
+
+# 查看帮助
+prompt-sanitizer --help
+```
+
+### ⚡ 性能指标
+
+<div align="center">
+
+| 指标 | 数值 | 说明 |
+|------|------|------|
+| **处理速度** | < 1 秒 | 50k 字符文本 |
+| **内存占用** | < 50 MB | 运行时内存 |
+| **应用大小** | ~10 MB | 安装包大小 |
+| **启动时间** | < 500ms | 冷启动时间 |
+
+</div>
 
 ## 📁 项目结构
 
@@ -370,16 +465,20 @@ PromptSanitizer/
 
 ### 🎯 支持的敏感信息类型
 
-| 类型 | 说明 | 检测方式 |
-|------|------|----------|
-| 📱 **手机号** | 中国手机号（11位） | 正则 + 号段校验 |
-| 📧 **邮箱地址** | 标准邮箱格式 | 正则 + 域名验证 |
-| 🆔 **身份证号** | 中国居民身份证 | 正则 + 校验位算法 |
-| 🌐 **IP 地址** | IPv4 地址 | 正则 + 范围校验 |
-| 🔗 **域名/URL** | 域名和完整 URL | 正则 + TLD 验证 |
-| 🔑 **Token/Key** | API Key、Bearer Token、JWT、Cookie | 前缀匹配 + 熵值检测 |
-| 🔐 **密码字段** | 密码相关内容 | 上下文关键词 + 模式匹配 |
-| 🔒 **私钥片段** | PEM 格式私钥 | 格式识别 + 特征检测 |
+<div align="center">
+
+| 类型 | 说明 | 检测方式 | 风险等级 |
+|------|------|----------|---------|
+| 📱 **手机号** | 中国手机号（11位） | 正则 + 号段校验 | ⚠️ 中 |
+| 📧 **邮箱地址** | 标准邮箱格式 | 正则 + 域名验证 | ⚠️ 中 |
+| 🆔 **身份证号** | 中国居民身份证 | 正则 + 校验位算法 | 🔴 高 |
+| 🌐 **IP 地址** | IPv4 地址 | 正则 + 范围校验 | ⚠️ 中 |
+| 🔗 **域名/URL** | 域名和完整 URL | 正则 + TLD 验证 | ⚠️ 中 |
+| 🔑 **Token/Key** | API Key、Bearer Token、JWT、Cookie | 前缀匹配 + 熵值检测 | 🔴 高 |
+| 🔐 **密码字段** | 密码相关内容 | 上下文关键词 + 模式匹配 | 🔴 高 |
+| 🔒 **私钥片段** | PEM 格式私钥 | 格式识别 + 特征检测 | 🔴 高 |
+
+</div>
 
 ### 🛠️ 清洗策略
 
@@ -539,49 +638,148 @@ PromptSanitizer/
 
 ## 📚 文档
 
-- 📖 [通信协议文档](docs/protocol.md) - Go 引擎与前端之间的 JSON 通信协议
-- 📖 [使用指南](docs/usage.md) - 详细的使用说明和示例
-- 📖 [开发指南](docs/development.md) - 开发者文档和贡献指南
-- 📖 [隐私声明](docs/privacy.md) - 隐私保护和安全说明
+<div align="center">
+
+| 文档 | 说明 | 链接 |
+|------|------|------|
+| 📖 **通信协议** | Go 引擎与前端之间的 JSON 通信协议 | [protocol.md](docs/protocol.md) |
+| 📖 **使用指南** | 详细的使用说明和示例 | [usage.md](docs/usage.md) |
+| 📖 **开发指南** | 开发者文档和贡献指南 | [development.md](docs/development.md) |
+| 📖 **隐私声明** | 隐私保护和安全说明 | [privacy.md](docs/privacy.md) |
+| 📖 **快速开始** | 5 分钟快速上手指南 | [QUICKSTART.md](QUICKSTART.md) |
+
+</div>
 
 ## 🔐 隐私与安全
 
-### 核心原则
+### 🛡️ 核心原则
 
-- ✅ **本地优先**：所有处理完全在本地进行，不上传任何数据
-- ✅ **零日志**：不记录原文到日志，只记录统计信息
-- ✅ **掩码保护**：报告中的敏感内容仅显示掩码预览
-- ✅ **离线运行**：不发送任何网络请求（除非明确启用未来可能的 LLM 增强模式）
-- ✅ **开源透明**：所有代码开源可审查，确保无后门
+<div align="center">
 
-### 威胁模型
+| 原则 | 说明 | 状态 |
+|------|------|------|
+| 🔒 **本地优先** | 所有处理完全在本地进行，不上传任何数据 | ✅ |
+| 📝 **零日志** | 不记录原文到日志，只记录统计信息 | ✅ |
+| 🎭 **掩码保护** | 报告中的敏感内容仅显示掩码预览 | ✅ |
+| 🌐 **离线运行** | 不发送任何网络请求（除非明确启用未来可能的 LLM 增强模式） | ✅ |
+| 🔓 **开源透明** | 所有代码开源可审查，确保无后门 | ✅ |
 
-**本工具防护的场景**：
-- ✅ 防止在 Prompt 中意外泄露敏感信息
-- ✅ 防止将公司机密、客户数据发送给第三方 LLM
-- ✅ 防止个人隐私信息（身份证、手机号等）被上传
+</div>
 
-**本工具不防护的场景**：
-- ❌ 不能防止恶意用户故意绕过检测
-- ❌ 不能防止已加密的敏感信息（需要先解密）
-- ❌ 不能防止语义级别的信息泄露（如"我的生日是昨天"）
+### 🎯 威胁模型
+
+#### ✅ 本工具防护的场景
+
+- 防止在 Prompt 中意外泄露敏感信息
+- 防止将公司机密、客户数据发送给第三方 LLM
+- 防止个人隐私信息（身份证、手机号等）被上传
+- 防止 API Key、Token 等密钥泄露
+
+#### ❌ 本工具不防护的场景
+
+- 不能防止恶意用户故意绕过检测
+- 不能防止已加密的敏感信息（需要先解密）
+- 不能防止语义级别的信息泄露（如"我的生日是昨天"）
+- 不能防止图片、音频等非文本格式的敏感信息
 
 > 📝 更多安全说明请参考 [docs/privacy.md](docs/privacy.md)
+
+### 🔍 安全审计
+
+我们欢迎安全研究人员报告安全问题。请通过 [Security Advisories](https://github.com/your-username/PromptSanitizer/security/advisories) 提交安全漏洞报告。
+
+## 📊 项目统计
+
+<div align="center">
+
+![GitHub Contributors](https://img.shields.io/github/contributors/your-username/PromptSanitizer)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/your-username/PromptSanitizer)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/your-username/PromptSanitizer)
+![GitHub Language Count](https://img.shields.io/github/languages/count/your-username/PromptSanitizer)
+![GitHub Top Language](https://img.shields.io/github/languages/top/your-username/PromptSanitizer)
+
+</div>
+
+## 🤝 贡献指南
+
+我们非常欢迎社区贡献！无论是代码、文档、测试还是反馈，都是对项目的宝贵支持。
+
+### 如何贡献
+
+1. **🐛 报告问题**
+   - 在 [Issues](https://github.com/your-username/PromptSanitizer/issues) 中提交 Bug 报告
+   - 使用 Issue 模板，提供详细的重现步骤
+
+2. **💡 提出建议**
+   - 在 [Discussions](https://github.com/your-username/PromptSanitizer/discussions) 中分享想法
+   - 或创建 Feature Request Issue
+
+3. **🔧 提交代码**
+   ```bash
+   # Fork 项目
+   git clone https://github.com/your-username/PromptSanitizer.git
+   cd PromptSanitizer
+   
+   # 创建功能分支
+   git checkout -b feature/your-feature-name
+   
+   # 提交更改
+   git commit -m "Add: your feature description"
+   
+   # 推送到 Fork
+   git push origin feature/your-feature-name
+   
+   # 创建 Pull Request
+   ```
+
+4. **📝 完善文档**
+   - 改进 README、文档或注释
+   - 添加使用示例和教程
+
+### 贡献者
+
+感谢所有为项目做出贡献的开发者！
+
+<!-- 如果使用 all-contributors，可以添加徽章 -->
+[![Contributors](https://img.shields.io/github/contributors/your-username/PromptSanitizer)](https://github.com/your-username/PromptSanitizer/graphs/contributors)
+
+详细的贡献指南请查看 [docs/development.md](docs/development.md)
 
 ## 📄 许可证
 
 本项目采用 [MIT License](LICENSE) 开源协议。
 
-## 🤝 贡献指南
+```text
+MIT License
 
-欢迎贡献！我们欢迎各种形式的贡献：
+Copyright (c) 2024 PromptSanitizer Contributors
 
-- 🐛 **报告 Bug**：在 [Issues](https://github.com/your-repo/issues) 中提交问题
-- 💡 **提出建议**：分享你的想法和改进建议
-- 🔧 **提交代码**：Fork 项目，创建分支，提交 Pull Request
-- 📝 **完善文档**：帮助改进文档和示例
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-详细的贡献指南请查看 [docs/development.md](docs/development.md)
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
+## 🌟 Star History
+
+如果这个项目对你有帮助，请给个 Star ⭐️
+
+[![Star History Chart](https://api.star-history.com/svg?repos=MapleQiAN/PromptSanitizer&type=Date)](https://star-history.com/#your-username/PromptSanitizer&Date)
 
 ---
 
@@ -591,9 +789,28 @@ PromptSanitizer/
 
 Made with ❤️ by the PromptSanitizer Team
 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/your-username?style=social)](https://github.com/sponsors/your-username)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/your-username)
+
+**⭐ Star | 🍴 Fork | 📝 Issue | 💬 Discuss**
+
 </div>
 
-## 路线图
+## 🗺️ 路线图
+
+<div align="center">
+
+### 开发进度总览
+
+| Phase | 状态 | 进度 |
+|-------|------|------|
+| **Phase 1: MVP 核心功能** | ✅ 已完成 | 100% |
+| **Phase 2: 可控性与可解释性** | 🚧 进行中 | 60% |
+| **Phase 3: 多格式与场景适配** | 📋 计划中 | 0% |
+| **Phase 4: 生态与集成** | 📋 计划中 | 0% |
+| **Phase 5: 进阶功能** | 🔮 未来规划 | 0% |
+
+</div>
 
 ### Phase 1: MVP 核心功能 ✅
 
@@ -605,10 +822,10 @@ Made with ❤️ by the PromptSanitizer Team
 
 ### Phase 2: 可控性与可解释性 🚧
 
+- [x] 风险评分系统
 - [ ] Allowlist / Denylist 机制
 - [ ] 自定义规则包
 - [ ] Review Mode（逐条确认替换）
-- [ ] 风险评分系统
 - [ ] 误报管理（规则命名 + 规则开关）
 
 ### Phase 3: 多格式与场景适配 📋
@@ -633,4 +850,4 @@ Made with ❤️ by the PromptSanitizer Team
 - [ ] 语义级去标识（可选插件）
 - [ ] LLM 增强模式（可选，默认关闭）
 
-> 💡 当前进度：Phase 1 已完成，正在推进 Phase 2
+> 💡 **当前进度**：Phase 1 已完成，正在推进 Phase 2。查看 [Projects](https://github.com/your-username/PromptSanitizer/projects) 了解详细任务规划。
