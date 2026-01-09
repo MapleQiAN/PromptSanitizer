@@ -1,12 +1,21 @@
 <template>
-  <div
-    style="
-      padding: 16px;
-      background: #fff;
-      border-bottom: 1px solid #e0e0e0;
-    "
-  >
-    <h3 style="margin-bottom: 16px">配置选项</h3>
+  <div>
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      "
+    >
+      <div>
+        <h3 style="margin-bottom: 4px; font-size: 15px">配置选项</h3>
+        <div style="font-size: 12px; color: #9ca3af">
+          调整清洗策略与检测范围，获得更合适的脱敏结果
+        </div>
+      </div>
+    </div>
+
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px">
       <!-- 模式 -->
       <div>
@@ -16,7 +25,7 @@
         <select
           :value="config.mode"
           @change="(e) => updateConfig({ mode: (e.target as HTMLSelectElement).value as any })"
-          style="width: 100%; padding: 8px"
+          style="width: 100%"
         >
           <option value="sanitize">清洗模式</option>
           <option value="annotate">标注模式</option>
@@ -31,7 +40,7 @@
         <select
           :value="config.strategy"
           @change="(e) => updateConfig({ strategy: (e.target as HTMLSelectElement).value as any })"
-          style="width: 100%; padding: 8px"
+          style="width: 100%"
         >
           <option value="redact">占位符替换</option>
           <option value="mask">部分打码</option>
@@ -47,7 +56,7 @@
         <select
           :value="config.level"
           @change="(e) => updateConfig({ level: (e.target as HTMLSelectElement).value as any })"
-          style="width: 100%; padding: 8px"
+          style="width: 100%"
         >
           <option value="lenient">宽松</option>
           <option value="standard">标准</option>
@@ -100,10 +109,7 @@
         style="
           width: 100%;
           min-height: 80px;
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          font-size: 13px;
+          font-size: 12px;
         "
       />
     </div>

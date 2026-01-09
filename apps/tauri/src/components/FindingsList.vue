@@ -1,28 +1,15 @@
 <template>
-  <div
-    style="
-      height: 200px;
-      border-top: 1px solid #e0e0e0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-    "
-  >
-    <div
-      style="
-        padding: 8px 16px;
-        background: #f8f8f8;
-        border-bottom: 1px solid #e0e0e0;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      "
-    >
-      <span style="font-weight: bold">命中列表 ({{ findings.length }})</span>
+  <div class="card card--subtle" style="height: 210px; display: flex; flex-direction: column">
+    <div class="card__header">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span class="card__title">命中列表</span>
+        <span class="badge-soft">共 {{ findings.length }} 条</span>
+      </div>
       <select
         :value="filterCategory"
-        @change="(e) => filterCategory = (e.target as HTMLSelectElement).value"
-        style="padding: 4px 8px; font-size: 12px"
+        @change="(e) => (filterCategory = (e.target as HTMLSelectElement).value)"
+        class="select-pill"
+        style="min-width: 120px; font-size: 11px"
       >
         <option value="all">全部类别</option>
         <option v-for="cat in categories" :key="cat" :value="cat">
@@ -30,39 +17,37 @@
         </option>
       </select>
     </div>
-    <div style="flex: 1; overflow: auto; padding: 8px">
+    <div style="flex: 1; overflow: auto; padding: 8px 10px 10px">
       <div
         v-if="filteredFindings.length === 0"
-        style="padding: 16px; text-align: center; color: #999"
+        style="padding: 16px; text-align: center; color: #6b7280; font-size: 12px"
       >
         没有找到匹配项
       </div>
-      <table v-else style="width: 100%; font-size: 12px">
+      <table v-else class="table-modern">
         <thead>
-          <tr style="background: #f5f5f5">
-            <th style="padding: 8px; text-align: left">类别</th>
-            <th style="padding: 8px; text-align: left">位置</th>
-            <th style="padding: 8px; text-align: left">风险</th>
-            <th style="padding: 8px; text-align: left">预览</th>
-            <th style="padding: 8px; text-align: left">原因</th>
-            <th style="padding: 8px; text-align: left">操作</th>
+          <tr>
+            <th>类别</th>
+            <th>位置</th>
+            <th>风险</th>
+            <th>预览</th>
+            <th>原因</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="(finding, i) in filteredFindings"
             :key="i"
-            style="border-bottom: 1px solid #eee; cursor: pointer"
-            @mouseenter="(e) => (e.currentTarget as HTMLTableRowElement).style.background = '#f9f9f9'"
-            @mouseleave="(e) => (e.currentTarget as HTMLTableRowElement).style.background = 'transparent'"
+            style="cursor: pointer"
           >
-            <td style="padding: 8px">
+            <td>
               {{ categoryLabels[finding.type] || finding.type }}
             </td>
-            <td style="padding: 8px">
+            <td>
               {{ finding.start }}-{{ finding.end }}
             </td>
-            <td style="padding: 8px">
+            <td>
               <span
                 :style="{
                   color: getRiskColor(finding.risk),
@@ -72,22 +57,14 @@
                 {{ finding.risk }}
               </span>
             </td>
-            <td style="padding: 8px; font-family: monospace">
+            <td style="font-family: SF Mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace">
               {{ finding.replacement_preview }}
             </td>
-            <td style="padding: 8px; font-size: 11px; color: #666">
+            <td style="font-size: 11px; color: #9ca3af">
               {{ finding.reason }}
             </td>
-            <td style="padding: 8px">
-              <button
-                @click="onJump(finding.start, finding.end)"
-                style="
-                  padding: 4px 8px;
-                  font-size: 11px;
-                  background: #4a90e2;
-                  color: white;
-                "
-              >
+            <td>
+              <button class="btn-ghost" style="font-size: 11px; padding: 4px 10px" @click="onJump(finding.start, finding.end)">
                 跳转
               </button>
             </td>

@@ -1,25 +1,27 @@
 <template>
   <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden">
-    <div
-      style="
-        padding: 12px 16px;
-        background: #f8f8f8;
-        border-bottom: 1px solid #e0e0e0;
-        font-weight: bold;
-      "
-    >
-      {{ title }}
+    <div class="card__header">
+      <div class="card__title">
+        {{ title }}
+      </div>
+      <span v-if="highlightMode" class="badge-soft">
+        高亮命中片段
+      </span>
     </div>
-    <div style="flex: 1; padding: 16px; overflow: auto">
+    <div class="card__body" style="flex: 1; overflow: auto">
       <div
         v-if="highlightMode && findings.length > 0"
         style="
           padding: 12px;
-          background: #fff;
-          border: 1px solid #ddd;
-          border-radius: 4px;
+          background: radial-gradient(
+            circle at top left,
+            rgba(15, 23, 42, 0.96),
+            rgba(15, 23, 42, 0.92)
+          );
+          border-radius: 12px;
+          border: 1px solid rgba(31, 41, 55, 0.95);
           min-height: 200px;
-          font-size: 13px;
+          font-size: 12px;
           line-height: 1.6;
           white-space: pre-wrap;
         "
@@ -31,13 +33,20 @@
             background:
               part.isFinding && part.risk
                 ? part.risk >= 70
-                  ? '#ffebee'
+                  ? 'rgba(248, 113, 113, 0.16)'
                   : part.risk >= 40
-                  ? '#fff3e0'
-                  : '#e3f2fd'
+                  ? 'rgba(251, 191, 36, 0.16)'
+                  : 'rgba(56, 189, 248, 0.14)'
                 : 'transparent',
-            padding: part.isFinding ? '2px 4px' : '0',
-            borderRadius: part.isFinding ? '2px' : '0',
+            padding: part.isFinding ? '1px 4px' : '0',
+            borderRadius: part.isFinding ? '999px' : '0',
+            border: part.isFinding
+              ? part.risk && part.risk >= 70
+                ? '1px solid rgba(248, 113, 113, 0.4)'
+                : part.risk && part.risk >= 40
+                ? '1px solid rgba(251, 191, 36, 0.4)'
+                : '1px solid rgba(56, 189, 248, 0.5)'
+              : 'none',
           }"
         >
           {{ part.text }}
@@ -53,22 +62,43 @@
         :style="{
           width: '100%',
           height: '100%',
-          minHeight: '400px',
+          minHeight: '340px',
           padding: '12px',
-          border: '1px solid #ddd',
-          borderRadius: '4px',
-          fontSize: '13px',
-          fontFamily: 'monospace',
+          borderRadius: '12px',
+          fontSize: '12px',
+          fontFamily: 'SF Mono, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace',
           resize: 'none',
-          background: readOnly ? '#f9f9f9' : '#fff',
+          background: readOnly
+            ? 'radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9))'
+            : 'radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.92))',
+          border: '1px solid rgba(31, 41, 55, 0.95)',
+          color: '#e5e7eb',
         }"
       />
     </div>
-    <div v-if="!readOnly" style="padding: 8px 16px; border-top: 1px solid #e0e0e0">
-      <button @click="handleCopy" :disabled="!text">复制</button>
+    <div
+      v-if="!readOnly"
+      style="
+        padding: 8px 16px 10px;
+        border-top: 1px solid rgba(31, 41, 55, 0.95);
+        display: flex;
+        justify-content: flex-end;
+      "
+    >
+      <button class="btn-ghost" @click="handleCopy" :disabled="!text">
+        复制
+      </button>
     </div>
-    <div v-if="readOnly && text" style="padding: 8px 16px; border-top: 1px solid #e0e0e0">
-      <button @click="handleCopy">复制结果</button>
+    <div
+      v-if="readOnly && text"
+      style="
+        padding: 8px 16px 10px;
+        border-top: 1px solid rgba(31, 41, 55, 0.95);
+        display: flex;
+        justify-content: flex-end;
+      "
+    >
+      <button class="btn-ghost" @click="handleCopy">复制结果</button>
     </div>
   </div>
 </template>
