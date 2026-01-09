@@ -78,8 +78,8 @@
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Dark Theme - Dreamy Night Mode */
-body.theme-dark {
+/* Dark Theme - Dreamy Night Mode (Kawaii Style) */
+body.theme-dark.style-kawaii {
   --color-bg-primary: #1A1625;
   --color-bg-secondary: #251E35;
   --color-bg-tertiary: #342A45;
@@ -110,6 +110,110 @@ body.theme-dark {
 }
 
 /* ============================================
+   HORIZON STYLE - Modern Tech Theme
+   Inspired by Horizon UI Dashboard
+   ============================================ */
+
+/* Horizon Style - Light Mode */
+body.style-horizon {
+  --color-bg-primary: #F4F7FE;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #FAFCFE;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8FAFF;
+  
+  /* Horizon Brand Colors - Purple/Blue Gradient */
+  --color-primary: #4318FF;
+  --color-primary-light: #7551FF;
+  --color-primary-dark: #3311DB;
+  --color-primary-glow: rgba(67, 24, 255, 0.2);
+  
+  --color-secondary: #01B574;
+  --color-secondary-light: #05CD8C;
+  --color-secondary-dark: #01935D;
+  
+  --color-tertiary: #FFB547;
+  --color-tertiary-light: #FFC976;
+  
+  --color-success: #01B574;
+  --color-warning: #FFB547;
+  --color-error: #E31A1A;
+  
+  --color-text-primary: #2B3674;
+  --color-text-secondary: #A3AED0;
+  --color-text-muted: #C8CFE0;
+  --color-text-inverse: #FFFFFF;
+  
+  --color-border: #E9EDF7;
+  --color-border-light: #F4F7FE;
+  
+  --color-risk-high: #E31A1A;
+  --color-risk-medium: #FFB547;
+  --color-risk-low: #01B574;
+  
+  /* Horizon Gradients */
+  --gradient-brand: linear-gradient(135deg, #4318FF 0%, #868CFF 100%);
+  --gradient-success: linear-gradient(135deg, #01B574 0%, #39D98A 100%);
+  --gradient-warning: linear-gradient(135deg, #FFB547 0%, #FFCD6B 100%);
+  
+  /* Typography - Keep same fonts but adjust weights */
+  --font-display: 'Fredoka', 'Quicksand', system-ui, sans-serif;
+  --font-body: 'Quicksand', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Spacing - More compact for professional look */
+  --unit: 8px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 30px;
+  --radius-xl: 40px;
+  --radius-full: 9999px;
+  
+  /* Shadows - More subtle and professional */
+  --shadow-sm: 0 2px 5px rgba(112, 144, 176, 0.08);
+  --shadow-md: 0 7px 23px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 14px 34px rgba(112, 144, 176, 0.12);
+  --shadow-xl: 0 20px 45px rgba(112, 144, 176, 0.15);
+  
+  /* Animation - Smoother and more subtle */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Horizon Style - Dark Mode */
+body.theme-dark.style-horizon {
+  --color-bg-primary: #0B1437;
+  --color-bg-secondary: #111C44;
+  --color-bg-tertiary: #1B2559;
+  --color-surface: #111C44;
+  --color-surface-hover: #1B2559;
+  
+  --color-primary: #7551FF;
+  --color-primary-light: #9574FF;
+  --color-primary-dark: #5435E8;
+  --color-primary-glow: rgba(117, 81, 255, 0.3);
+  
+  --color-secondary: #01B574;
+  --color-secondary-light: #05CD8C;
+  
+  --color-tertiary: #FFB547;
+  
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A3AED0;
+  --color-text-muted: #707EAE;
+  --color-text-inverse: #0B1437;
+  
+  --color-border: #2D3663;
+  --color-border-light: #1B2559;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 7px 23px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 45px rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================
    Base Styles
    ============================================ */
 
@@ -132,8 +236,15 @@ body {
   transition: background 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
 }
 
-/* Floating Decorative Elements */
-body::before {
+/* Ensure text elements use proper colors in light theme */
+body:not(.theme-dark) p,
+body:not(.theme-dark) span:not(.highlight):not(.risk-badge):not(.badge):not(.findings-count),
+body:not(.theme-dark) div:not(.btn-action):not(.view-switcher__btn):not(.panel__header) {
+  color: var(--color-text-primary);
+}
+
+/* Floating Decorative Elements - Kawaii Style Only */
+body.style-kawaii::before {
   content: '🌸✨💖⭐🦋';
   position: fixed;
   top: -50px;
@@ -154,8 +265,8 @@ body::before {
   100% { transform: translateY(100vh) rotate(360deg); }
 }
 
-/* Cute Gradient Background Effect */
-body::after {
+/* Cute Gradient Background Effect - Kawaii Style Only */
+body.style-kawaii::after {
   content: '';
   position: fixed;
   top: -50%;
@@ -168,6 +279,22 @@ body::after {
   pointer-events: none;
   z-index: 0;
   animation: gradient-rotate 30s ease-in-out infinite;
+}
+
+/* Horizon Style Background - Professional Gradient Mesh */
+body.style-horizon::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(67, 24, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(1, 181, 116, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(134, 140, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 @keyframes gradient-rotate {
@@ -313,7 +440,8 @@ h4 { font-size: 18px; }
   position: relative;
 }
 
-.app-shell__brand::after {
+/* Sparkle decoration - Kawaii Style Only */
+body.style-kawaii .app-shell__brand::after {
   content: '✨';
   position: absolute;
   top: 20px;
@@ -349,7 +477,7 @@ h4 { font-size: 18px; }
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 26px;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   position: relative;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md), 0 0 30px var(--color-primary-glow);
@@ -391,10 +519,24 @@ h4 { font-size: 18px; }
   font-weight: 700;
   color: var(--color-text-primary);
   margin-bottom: 4px;
+}
+
+/* Gradient text only works well on light backgrounds */
+body.style-kawaii:not(.theme-dark) .app-shell__title,
+body.style-horizon:not(.theme-dark) .app-shell__title {
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Dark theme: use solid color for better visibility */
+body.theme-dark .app-shell__title {
+  color: var(--color-text-primary);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 .app-shell__subtitle {
@@ -506,7 +648,7 @@ h4 { font-size: 18px; }
 
 .btn-action--primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
   animation: pulse-glow 3s ease-in-out infinite;
@@ -592,12 +734,21 @@ h4 { font-size: 18px; }
 }
 
 .view-switcher__btn--active {
-  color: var(--color-text-inverse);
+  color: var(--color-text-primary);
+  transform: translateY(-2px);
 }
 
+/* Active button uses subtle background instead of full primary color */
 .view-switcher__btn--active::before {
-  opacity: 1;
+  opacity: 0.15;
   transform: scale(1);
+  background: var(--color-primary);
+}
+
+/* Ensure active button has hover-like appearance */
+.view-switcher__btn--active:hover {
+  color: var(--color-text-primary);
+  transform: translateY(-2px);
 }
 
 .theme-toggle,
@@ -741,9 +892,9 @@ h4 { font-size: 18px; }
   border: 3px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: calc(var(--unit) * 3);
-  color: var(--color-text-primary);
-  font-family: var(--font-mono);
-  font-size: 14px;
+  color: var(--color-text-primary) !important;
+  font-family: 'KaiTi', '楷体', 'STKaiti', var(--font-mono), monospace;
+  font-size: 16px;
   line-height: 1.7;
   resize: none;
   outline: none;
@@ -764,11 +915,12 @@ h4 { font-size: 18px; }
 
 /* Highlighted Text */
 .highlight-view {
-  font-family: var(--font-mono);
-  font-size: 14px;
+  font-family: 'KaiTi', '楷体', 'STKaiti', var(--font-mono), monospace;
+  font-size: 16px;
   line-height: 1.7;
   white-space: pre-wrap;
   word-wrap: break-word;
+  color: var(--color-text-primary) !important;
 }
 
 .highlight {
@@ -776,7 +928,7 @@ h4 { font-size: 18px; }
   padding: 3px 8px;
   border-radius: 8px;
   background: var(--color-warning);
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(255, 182, 72, 0.4);
   transition: all 0.2s var(--ease-smooth);
@@ -851,7 +1003,7 @@ h4 { font-size: 18px; }
   height: 28px;
   padding: 0 12px;
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
@@ -908,7 +1060,7 @@ h4 { font-size: 18px; }
 
 .data-table td {
   padding: calc(var(--unit) * 2) calc(var(--unit) * 2);
-  color: var(--color-text-primary);
+  color: var(--color-text-primary) !important;
   background: var(--color-bg-secondary);
 }
 
@@ -954,17 +1106,17 @@ h4 { font-size: 18px; }
 
 .risk-badge--high {
   background: linear-gradient(135deg, var(--color-risk-high), #FF8FB8);
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
 }
 
 .risk-badge--medium {
   background: linear-gradient(135deg, var(--color-risk-medium), #FFCC77);
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
 }
 
 .risk-badge--low {
   background: linear-gradient(135deg, var(--color-risk-low), #95E8A5);
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
 }
 
 /* ============================================
@@ -974,7 +1126,7 @@ h4 { font-size: 18px; }
 select, input[type="text"], input[type="checkbox"] {
   font-family: var(--font-body);
   font-size: 14px;
-  color: var(--color-text-primary);
+  color: var(--color-text-primary) !important;
 }
 
 select, input[type="text"] {
@@ -1039,7 +1191,7 @@ input[type="checkbox"]:checked::after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 14px;
 }
@@ -1160,4 +1312,178 @@ input[type="checkbox"]:checked::after {
 
 .bounce-in {
   animation: bounce-in 0.6s var(--ease-bounce);
+}
+
+/* ============================================
+   HORIZON STYLE OVERRIDES
+   Professional & Modern Adjustments
+   ============================================ */
+
+/* Horizon: Glassmorphic Sidebar */
+body.style-horizon .app-shell__sidebar {
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+body.theme-dark.style-horizon .app-shell__sidebar {
+  background: rgba(17, 28, 68, 0.8);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(163, 174, 208, 0.1);
+}
+
+/* Horizon: Remove shimmer animation from sidebar */
+body.style-horizon .app-shell__sidebar::before {
+  display: none;
+}
+
+/* Horizon: Logo with Brand Gradient */
+body.style-horizon .app-shell__logo-mark {
+  background: var(--gradient-brand);
+  animation: none;
+  box-shadow: 0 8px 24px rgba(67, 24, 255, 0.3);
+}
+
+body.style-horizon .app-shell__logo-mark:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 32px rgba(67, 24, 255, 0.4);
+}
+
+/* Horizon: Primary Button with Gradient */
+body.style-horizon .btn-action--primary {
+  background: var(--gradient-brand);
+  border: none;
+  box-shadow: 0 4px 14px rgba(67, 24, 255, 0.3);
+  animation: none;
+}
+
+body.style-horizon .btn-action--primary:hover {
+  box-shadow: 0 8px 24px rgba(67, 24, 255, 0.4);
+  transform: translateY(-3px);
+}
+
+/* Horizon: Regular Buttons - More Subtle */
+body.style-horizon .btn-action {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+body.style-horizon .btn-action:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+/* Horizon: Remove Emoji Decorations from Panels */
+body.style-horizon .panel::before {
+  content: none;
+}
+
+/* Horizon: Cleaner Panel Headers */
+body.style-horizon .panel__header {
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Horizon: Subtle Header Progress Bar */
+body.style-horizon .panel__header::after {
+  background: var(--gradient-brand);
+  height: 2px;
+  animation: none;
+  width: 60px;
+}
+
+/* Horizon: Glassmorphic Header */
+body.style-horizon .app-shell__header {
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+body.theme-dark.style-horizon .app-shell__header {
+  background: rgba(17, 28, 68, 0.8);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(163, 174, 208, 0.1);
+}
+
+/* Horizon: View Switcher with Brand Color */
+body.style-horizon .view-switcher {
+  background: var(--color-bg-tertiary);
+}
+
+body.style-horizon .view-switcher__btn--active::before {
+  background: var(--color-primary);
+  opacity: 0.15;
+}
+
+/* Horizon: Cleaner Panels */
+body.style-horizon .panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+/* Horizon: Professional Scrollbar */
+body.style-horizon ::-webkit-scrollbar-thumb {
+  background: var(--gradient-brand);
+  border: 2px solid var(--color-bg-tertiary);
+}
+
+/* Horizon: Risk Badges with Brand Colors */
+body.style-horizon .risk-badge--high {
+  background: linear-gradient(135deg, var(--color-error), #FF5252);
+}
+
+body.style-horizon .risk-badge--medium {
+  background: linear-gradient(135deg, var(--color-warning), #FFCD6B);
+}
+
+body.style-horizon .risk-badge--low {
+  background: linear-gradient(135deg, var(--color-success), #39D98A);
+}
+
+/* Horizon: Remove Bubble Decorations */
+body.style-horizon .app-shell::before,
+body.style-horizon .app-shell::after {
+  display: none;
+}
+
+/* Horizon: Style Toggle Button */
+.style-toggle {
+  padding: calc(var(--unit) * 1.5) calc(var(--unit) * 2.5);
+  background: var(--color-bg-tertiary);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all 0.3s var(--ease-bounce);
+  box-shadow: var(--shadow-sm);
+}
+
+.style-toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.style-toggle:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Horizon: Gradient Background for Stats in Report */
+body.style-horizon .stat-card {
+  background: linear-gradient(135deg, rgba(67, 24, 255, 0.05), rgba(134, 140, 255, 0.05));
+  border: 1px solid var(--color-border);
+}
+
+body.style-horizon .stat-card:hover {
+  background: linear-gradient(135deg, rgba(67, 24, 255, 0.08), rgba(134, 140, 255, 0.08));
 }

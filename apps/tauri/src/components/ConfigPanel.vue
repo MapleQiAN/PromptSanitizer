@@ -98,6 +98,29 @@
         "
       />
     </div>
+
+    <!-- Font Size -->
+    <div>
+      <label>Font Size (px)</label>
+      <input
+        type="number"
+        :value="config.fontSize || 16"
+        @input="(e) => updateConfig({ fontSize: parseInt((e.target as HTMLInputElement).value) || 16 })"
+        min="10"
+        max="32"
+        step="1"
+        style="
+          width: 100%;
+          padding: calc(var(--unit) * 2);
+          background: var(--color-bg-secondary);
+          border: 3px solid var(--color-border);
+          outline: none;
+          transition: all 0.3s var(--ease-smooth);
+          border-radius: var(--radius-md);
+          font-weight: 500;
+        "
+      />
+    </div>
   </div>
 </template>
 

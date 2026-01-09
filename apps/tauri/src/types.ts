@@ -4,6 +4,7 @@ export interface Config {
   level: "lenient" | "standard" | "strict";
   enabledCategories: string[];
   allowlist: string[];
+  fontSize?: number;
 }
 
 export interface Finding {

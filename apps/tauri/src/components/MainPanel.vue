@@ -2,7 +2,7 @@
   <div style="display: flex; flex-direction: column; height: 100%;">
     <!-- Badge/Status -->
     <div v-if="highlightMode" style="margin-bottom: 16px;">
-      <span class="badge" style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); color: var(--color-text-inverse); border: none;">
+      <span class="badge" style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); color: #FFFFFF; border: none;">
         ✨ Highlight Mode Active
       </span>
     </div>
@@ -11,14 +11,15 @@
     <div
       v-if="highlightMode && findings.length > 0"
       class="highlight-view"
-      style="
-        flex: 1;
-        padding: 24px;
-        background: var(--color-bg-secondary);
-        border: 3px solid var(--color-border);
-        border-radius: var(--radius-md);
-        overflow: auto;
-      "
+      :style="{
+        flex: 1,
+        padding: '24px',
+        background: 'var(--color-bg-secondary)',
+        border: '3px solid var(--color-border)',
+        borderRadius: 'var(--radius-md)',
+        overflow: 'auto',
+        fontSize: `${fontSize}px`,
+      }"
     >
       <span
         v-for="(part, i) in highlightedParts"
@@ -42,7 +43,7 @@
       :readonly="readOnly"
       :placeholder="readOnly ? 'Sanitized output will appear here...' : 'Input or paste text for privacy sanitization...'"
       class="text-editor"
-      :style="{ flex: 1 }"
+      :style="{ flex: 1, fontSize: `${fontSize}px` }"
     />
 
     <!-- Action Bar -->
@@ -94,15 +95,19 @@ interface Props {
   readOnly?: boolean;
   findings?: Finding[];
   highlightMode?: boolean;
+  fontSize?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   readOnly: false,
   findings: () => [],
   highlightMode: false,
+  fontSize: 16,
 });
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
+
+const fontSize = computed(() => props.fontSize || 16);
 
 const highlightedParts = computed(() => {
   if (!props.findings.length || !props.highlightMode) {

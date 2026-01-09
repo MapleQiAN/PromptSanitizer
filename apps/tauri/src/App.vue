@@ -90,6 +90,9 @@
         </div>
 
         <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="style-toggle" @click="toggleStyle">
+            {{ themeStyle === 'kawaii' ? t.kawaiiStyle : t.horizonStyle }}
+          </button>
           <button class="lang-toggle" @click="toggleLang">
             {{ lang === 'zh' ? '🌏 中文' : '🌍 EN' }}
           </button>
@@ -116,6 +119,7 @@
                 :onChange="setOriginalText"
                 :findings="findings"
                 :highlightMode="config.mode === 'annotate'"
+                :fontSize="config.fontSize || 16"
               />
             </div>
           </div>
@@ -130,6 +134,7 @@
                 :text="sanitizedText"
                 :readOnly="true"
                 :findings="findings"
+                :fontSize="config.fontSize || 16"
               />
             </div>
           </div>
@@ -146,7 +151,7 @@
                 <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 12px; font-family: var(--font-display);">
                   {{ t.before }}
                 </div>
-                <pre class="text-editor" readonly style="flex: 1;">{{ originalText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
+                <pre class="text-editor" readonly :style="{ flex: 1, fontSize: `${config.fontSize || 16}px` }">{{ originalText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
               </div>
               
               <div style="width: 4px; background: linear-gradient(to bottom, transparent, var(--color-primary) 50%, transparent); opacity: 0.3; border-radius: var(--radius-full);"></div>
@@ -155,7 +160,7 @@
                 <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 12px; font-family: var(--font-display);">
                   {{ t.after }}
                 </div>
-                <pre class="text-editor" readonly style="flex: 1;">{{ sanitizedText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
+                <pre class="text-editor" readonly :style="{ flex: 1, fontSize: `${config.fontSize || 16}px` }">{{ sanitizedText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
               </div>
             </div>
           </div>
@@ -230,6 +235,10 @@ import type { Config, Finding, Response } from "./types";
 type Language = "zh" | "en";
 const lang = ref<Language>("zh");
 
+// 主题风格配置
+type ThemeStyle = "kawaii" | "horizon";
+const themeStyle = ref<ThemeStyle>("kawaii");
+
 const i18n = {
   zh: {
     brandTitle: "提示词净化器",
@@ -256,6 +265,8 @@ const i18n = {
     inputPlaceholder: "请输入要净化的文本...",
     darkMode: "🌙 深色",
     lightMode: "☀️ 浅色",
+    kawaiiStyle: "🎀 可爱风",
+    horizonStyle: "🚀 科技风",
   },
   en: {
     brandTitle: "PromptSanitizer",
@@ -282,6 +293,8 @@ const i18n = {
     inputPlaceholder: "Enter text to sanitize...",
     darkMode: "🌙 Dark",
     lightMode: "☀️ Light",
+    kawaiiStyle: "🎀 Kawaii",
+    horizonStyle: "🚀 Horizon",
   },
 };
 
@@ -306,6 +319,7 @@ const config = ref<Config>({
     "private_key",
   ],
   allowlist: [],
+  fontSize: 16,
 });
 const showConfig = ref(false);
 const viewMode = ref<"split" | "diff" | "report">("split");
@@ -333,10 +347,11 @@ const filteredFindings = computed(() => {
     : findings.value.filter((f) => f.type === filterCategory.value);
 });
 
-const applyTheme = (value: "dark" | "light") => {
+const applyTheme = (colorMode: "dark" | "light", style: ThemeStyle) => {
   const body = document.body;
-  body.classList.remove("theme-dark", "theme-light");
-  body.classList.add(value === "dark" ? "theme-dark" : "theme-light");
+  body.classList.remove("theme-dark", "theme-light", "style-kawaii", "style-horizon");
+  body.classList.add(colorMode === "dark" ? "theme-dark" : "theme-light");
+  body.classList.add(style === "kawaii" ? "style-kawaii" : "style-horizon");
 };
 
 const toggleTheme = () => {
@@ -345,6 +360,10 @@ const toggleTheme = () => {
 
 const toggleLang = () => {
   lang.value = lang.value === "zh" ? "en" : "zh";
+};
+
+const toggleStyle = () => {
+  themeStyle.value = themeStyle.value === "kawaii" ? "horizon" : "kawaii";
 };
 
 const naiveTheme = computed<GlobalTheme | null>(() =>
@@ -360,13 +379,13 @@ const getRiskColor = (score: number) => {
 onMounted(() => {
   const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches;
   theme.value = prefersDark ? "dark" : "light";
-  applyTheme(theme.value);
+  applyTheme(theme.value, themeStyle.value);
 });
 
 watch(
-  theme,
-  (value) => {
-    applyTheme(value);
+  [theme, themeStyle],
+  ([newTheme, newStyle]) => {
+    applyTheme(newTheme, newStyle);
   },
   { flush: "post" }
 );
