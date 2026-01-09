@@ -92,20 +92,91 @@ func (s *Sanitizer) mask(text string, category detector.Category) string {
 	var prefixLen, suffixLen int
 	switch category {
 	case detector.CategoryPhone:
+		// 手机号：保留前3位和后4位，如 138****0000
 		prefixLen, suffixLen = 3, 4
 	case detector.CategoryEmail:
-		prefixLen = len(text[:strings.Index(text, "@")])
-		if prefixLen > 3 {
-			prefixLen = 3
-		}
-		suffixLen = len(text) - strings.Index(text, "@")
-		if suffixLen > 5 {
-			suffixLen = 5
+		// 邮箱：保留@前3位和@后完整域名，如 san***@example.com
+		atIndex := strings.Index(text, "@")
+		if atIndex > 0 {
+			if atIndex > 3 {
+				prefixLen = 3
+			} else {
+				prefixLen = atIndex
+			}
+			// 保留@符号和完整域名部分
+			suffixLen = length - atIndex
+		} else {
+			prefixLen, suffixLen = 3, 3
 		}
 	case detector.CategoryIDCard:
+		// 身份证：保留前3位和后4位，如 110***XXXX
 		prefixLen, suffixLen = 3, 4
-	case detector.CategoryToken, detector.CategoryPassword:
+	case detector.CategoryBankCard, detector.CategoryCreditCard:
+		// 银行卡/信用卡：保留前4位和后4位，中间全部打码，如 6222****0000
 		prefixLen, suffixLen = 4, 4
+	case detector.CategoryCVV:
+		// CVV：全部打码，如 ***
+		return "***"
+	case detector.CategoryPassport:
+		// 护照号：保留首字母和后2位，如 E******00
+		prefixLen, suffixLen = 1, 2
+	case detector.CategoryDriverLicense:
+		// 驾照号：保留前2位和后3位，如 BJ*****001
+		prefixLen, suffixLen = 2, 3
+	case detector.CategoryAddress:
+		// 地址：保留省市区，打码详细地址，如 北京市朝阳区****
+		// 简化处理：保留前6个字符，其余打码
+		if length > 6 {
+			prefixLen = 6
+			suffixLen = 0
+		} else {
+			prefixLen = 2
+			suffixLen = 0
+		}
+	case detector.CategoryGPS:
+		// GPS坐标：全部打码，如 **.**, **.**
+		return "**.**, **.**"
+	case detector.CategoryMAC:
+		// MAC地址：保留前2段，其余打码，如 00:00:**:**:**:**
+		parts := strings.FieldsFunc(text, func(r rune) bool {
+			return r == ':' || r == '-'
+		})
+		if len(parts) >= 2 {
+			return parts[0] + ":" + parts[1] + ":**:**:**:**"
+		}
+		prefixLen, suffixLen = 2, 0
+	case detector.CategoryDatabaseConn:
+		// 数据库连接串：保留协议和主机，打码用户名密码，如 postgres://***:***@host:port/db
+		protocolIndex := strings.Index(text, "://")
+		atIndex := strings.Index(text, "@")
+		if protocolIndex > 0 && atIndex > protocolIndex {
+			protocolPart := text[:protocolIndex+3]
+			hostPart := text[atIndex+1:]
+			return protocolPart + "***:***@" + hostPart
+		}
+		// 如果没有@符号，只保留协议部分
+		if protocolIndex > 0 {
+			return text[:protocolIndex+3] + "***"
+		}
+		prefixLen, suffixLen = 4, 4
+	case detector.CategoryName:
+		// 姓名：保留首字，其余打码，如 张**
+		prefixLen, suffixLen = 1, 0
+	case detector.CategoryDate:
+		// 日期：打码月份和日期，如 1999-**-**
+		parts := strings.FieldsFunc(text, func(r rune) bool {
+			return r == '-' || r == '/' || r == '.'
+		})
+		if len(parts) >= 3 {
+			return parts[0] + "-**-**"
+		}
+		prefixLen, suffixLen = 4, 0
+	case detector.CategoryToken, detector.CategoryPassword:
+		// Token/密码：保留前4位和后4位，如 sk-t****FAKE
+		prefixLen, suffixLen = 4, 4
+	case detector.CategoryPrivateKey:
+		// 私钥：全部替换为占位符
+		return "[PRIVATE_KEY_REDACTED]"
 	default:
 		prefixLen, suffixLen = 2, 2
 	}
@@ -115,7 +186,10 @@ func (s *Sanitizer) mask(text string, category detector.Category) string {
 	}
 
 	prefix := text[:prefixLen]
-	suffix := text[length-suffixLen:]
+	suffix := ""
+	if suffixLen > 0 {
+		suffix = text[length-suffixLen:]
+	}
 	masked := strings.Repeat("*", length-prefixLen-suffixLen)
 	return prefix + masked + suffix
 }
@@ -123,14 +197,25 @@ func (s *Sanitizer) mask(text string, category detector.Category) string {
 // redact 替换为占位符
 func (s *Sanitizer) redact(category detector.Category) string {
 	categoryMap := map[detector.Category]string{
-		detector.CategoryPhone:      "[REDACTED:PHONE]",
-		detector.CategoryEmail:      "[REDACTED:EMAIL]",
-		detector.CategoryIDCard:     "[REDACTED:ID_CARD]",
-		detector.CategoryIP:         "[REDACTED:IP]",
-		detector.CategoryDomain:     "[REDACTED:DOMAIN]",
-		detector.CategoryToken:      "[REDACTED:TOKEN]",
-		detector.CategoryPassword:   "[REDACTED:PASSWORD]",
-		detector.CategoryPrivateKey: "[REDACTED:PRIVATE_KEY]",
+		detector.CategoryPhone:         "[REDACTED:PHONE]",
+		detector.CategoryEmail:         "[REDACTED:EMAIL]",
+		detector.CategoryIDCard:        "[REDACTED:ID_CARD]",
+		detector.CategoryIP:            "[REDACTED:IP]",
+		detector.CategoryDomain:        "[REDACTED:DOMAIN]",
+		detector.CategoryToken:         "[REDACTED:TOKEN]",
+		detector.CategoryPassword:      "[REDACTED:PASSWORD]",
+		detector.CategoryPrivateKey:    "[REDACTED:PRIVATE_KEY]",
+		detector.CategoryBankCard:      "[REDACTED:BANK_CARD]",
+		detector.CategoryCreditCard:   "[REDACTED:CREDIT_CARD]",
+		detector.CategoryCVV:           "[REDACTED:CVV]",
+		detector.CategoryPassport:      "[REDACTED:PASSPORT]",
+		detector.CategoryDriverLicense: "[REDACTED:DRIVER_LICENSE]",
+		detector.CategoryAddress:       "[REDACTED:ADDRESS]",
+		detector.CategoryGPS:           "[REDACTED:GPS]",
+		detector.CategoryMAC:           "[REDACTED:MAC]",
+		detector.CategoryDatabaseConn:  "[REDACTED:DATABASE_CONN]",
+		detector.CategoryName:          "[REDACTED:NAME]",
+		detector.CategoryDate:          "[REDACTED:DATE]",
 	}
 	if name, ok := categoryMap[category]; ok {
 		return name
@@ -147,14 +232,25 @@ func (s *Sanitizer) pseudonym(text string, category detector.Category) string {
 
 	// 生成新的代号
 	categoryMap := map[detector.Category]string{
-		detector.CategoryPhone:      "PHONE",
-		detector.CategoryEmail:      "EMAIL",
-		detector.CategoryIDCard:     "ID_CARD",
-		detector.CategoryIP:         "IP",
-		detector.CategoryDomain:     "DOMAIN",
-		detector.CategoryToken:      "TOKEN",
-		detector.CategoryPassword:   "PASSWORD",
-		detector.CategoryPrivateKey: "PRIVATE_KEY",
+		detector.CategoryPhone:         "PHONE",
+		detector.CategoryEmail:         "EMAIL",
+		detector.CategoryIDCard:        "ID_CARD",
+		detector.CategoryIP:            "IP",
+		detector.CategoryDomain:        "DOMAIN",
+		detector.CategoryToken:         "TOKEN",
+		detector.CategoryPassword:      "PASSWORD",
+		detector.CategoryPrivateKey:    "PRIVATE_KEY",
+		detector.CategoryBankCard:      "BANK_CARD",
+		detector.CategoryCreditCard:    "CREDIT_CARD",
+		detector.CategoryCVV:           "CVV",
+		detector.CategoryPassport:      "PASSPORT",
+		detector.CategoryDriverLicense: "DRIVER_LICENSE",
+		detector.CategoryAddress:       "ADDRESS",
+		detector.CategoryGPS:           "GPS",
+		detector.CategoryMAC:           "MAC",
+		detector.CategoryDatabaseConn:  "DATABASE_CONN",
+		detector.CategoryName:          "NAME",
+		detector.CategoryDate:          "DATE",
 	}
 
 	prefix := categoryMap[category]

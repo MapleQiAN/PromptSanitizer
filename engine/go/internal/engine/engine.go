@@ -25,6 +25,17 @@ func NewEngine() *Engine {
 			detector.NewTokenDetector(),
 			detector.NewPasswordDetector(),
 			detector.NewPrivateKeyDetector(),
+			detector.NewBankCardDetector(),
+			detector.NewCreditCardDetector(),
+			detector.NewCVVDetector(),
+			detector.NewPassportDetector(),
+			detector.NewDriverLicenseDetector(),
+			detector.NewAddressDetector(),
+			detector.NewGPSDetector(),
+			detector.NewMACDetector(),
+			detector.NewDatabaseConnDetector(),
+			detector.NewNameDetector(),
+			detector.NewDateDetector(),
 		},
 	}
 }
@@ -133,16 +144,27 @@ func (e *Engine) applyAllowlist(findings []detector.Finding, text string, allowl
 // deduplicateFindings 去重并处理重叠
 func (e *Engine) deduplicateFindings(findings []detector.Finding) []detector.Finding {
 	// 先按优先级排序：风险高的优先，然后按长度（长的优先），最后按类型优先级
-	// 类型优先级：email > domain, token > password > private_key
+	// 类型优先级：风险高的优先
 	typePriority := map[detector.Category]int{
-		detector.CategoryEmail:      10,
-		detector.CategoryDomain:     1,
-		detector.CategoryToken:      8,
-		detector.CategoryPassword:   7,
-		detector.CategoryPrivateKey: 9,
-		detector.CategoryIDCard:     9,
-		detector.CategoryPhone:      6,
-		detector.CategoryIP:         5,
+		detector.CategoryEmail:         10,
+		detector.CategoryDomain:        1,
+		detector.CategoryToken:         8,
+		detector.CategoryPassword:      7,
+		detector.CategoryPrivateKey:    9,
+		detector.CategoryIDCard:        9,
+		detector.CategoryPhone:         6,
+		detector.CategoryIP:            5,
+		detector.CategoryBankCard:      9,
+		detector.CategoryCreditCard:    9,
+		detector.CategoryCVV:           9,
+		detector.CategoryPassport:      8,
+		detector.CategoryDriverLicense: 8,
+		detector.CategoryAddress:       6,
+		detector.CategoryGPS:           7,
+		detector.CategoryMAC:           5,
+		detector.CategoryDatabaseConn:  10,
+		detector.CategoryName:          5,
+		detector.CategoryDate:          6,
 	}
 
 	sorted := make([]detector.Finding, len(findings))
