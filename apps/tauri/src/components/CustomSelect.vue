@@ -13,7 +13,7 @@
       >
         <path
           d="M6 9L1 4h10z"
-          fill="var(--color-primary)"
+          fill="var(--color-text-secondary)"
         />
       </svg>
     </div>
@@ -106,10 +106,10 @@ onUnmounted(() => {
 
 .custom-select__trigger {
   width: 100%;
-  padding: calc(var(--unit) * 2.5);
-  background: var(--color-bg-secondary);
-  border: 3px solid var(--color-border);
-  border-radius: var(--radius-md);
+  padding: calc(var(--unit) * 2.5) calc(var(--unit) * 3);
+  background: var(--color-bg-tertiary);
+  border: 1.5px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 500;
@@ -118,78 +118,77 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.3s var(--ease-smooth);
+  transition: all 0.25s var(--ease-smooth);
   outline: none;
   user-select: none;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .custom-select__trigger:hover {
-  border-color: var(--color-primary-light);
-  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  background-color: var(--color-bg-secondary);
 }
 
-.custom-select--open .custom-select__trigger,
-.custom-select__trigger:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-glow), var(--shadow-md);
+.custom-select--open .custom-select__trigger {
+  border-color: var(--color-primary-light);
   background-color: var(--color-surface);
-  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.12);
 }
 
 .custom-select__value {
   flex: 1;
   text-align: left;
+  color: var(--color-text-primary);
 }
 
 .custom-select__arrow {
-  transition: transform 0.3s var(--ease-smooth);
+  transition: transform 0.25s var(--ease-smooth);
   flex-shrink: 0;
   margin-left: calc(var(--unit) * 2);
+  opacity: 0.6;
 }
 
 .custom-select__arrow--open {
   transform: rotate(180deg);
+  opacity: 1;
 }
 
 .custom-select__dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
   background: var(--color-surface);
-  border: 3px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg), 0 0 20px var(--color-primary-glow);
+  border: 1.5px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(255, 107, 157, 0.1);
   z-index: 1000;
   overflow: hidden;
-  margin-top: 4px;
-  max-height: 300px;
+  margin-top: 2px;
+  max-height: 280px;
   overflow-y: auto;
-  backdrop-filter: blur(10px);
 }
 
 /* Custom scrollbar for dropdown */
 .custom-select__dropdown::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .custom-select__dropdown::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-sm);
+  background: transparent;
 }
 
 .custom-select__dropdown::-webkit-scrollbar-thumb {
-  background: var(--color-primary-light);
+  background: var(--color-border);
   border-radius: var(--radius-sm);
 }
 
 .custom-select__dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 .custom-select__option {
-  padding: calc(var(--unit) * 3) calc(var(--unit) * 3.5);
+  padding: calc(var(--unit) * 2.5) calc(var(--unit) * 3);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 500;
@@ -197,60 +196,63 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.2s var(--ease-smooth);
   position: relative;
-  border-bottom: 1px solid var(--color-border-light);
-  min-height: 44px;
+  min-height: 40px;
   display: flex;
   align-items: center;
 }
 
-.custom-select__option:last-child {
-  border-bottom: none;
+.custom-select__option:not(:last-child) {
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .custom-select__option:hover {
-  background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
-  color: #FFFFFF;
-  transform: translateX(4px);
-  border-left: 4px solid var(--color-primary);
-  padding-left: calc(var(--unit) * 2.5);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .custom-select__option--selected {
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
-  color: #FFFFFF;
+  background: var(--color-primary);
+  color: #FFFFFF !important;
   font-weight: 600;
-  border-left: 4px solid var(--color-primary-dark);
-  padding-left: calc(var(--unit) * 2.5);
+  padding-left: calc(var(--unit) * 5);
+}
+
+.custom-select__option--selected * {
+  color: #FFFFFF !important;
 }
 
 .custom-select__option--selected::before {
   content: "✓";
   position: absolute;
-  left: calc(var(--unit) * 2);
-  font-weight: 700;
-  font-size: 16px;
-  color: #FFFFFF;
+  left: calc(var(--unit) * 2.5);
+  font-weight: 600;
+  font-size: 14px;
+  color: #FFFFFF !important;
+  opacity: 1;
 }
 
 .custom-select__option--selected:hover {
-  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
-  color: #FFFFFF;
-  transform: translateX(4px);
+  background: var(--color-primary-dark);
+  color: #FFFFFF !important;
+}
+
+.custom-select__option--selected:hover * {
+  color: #FFFFFF !important;
 }
 
 /* Dropdown animation */
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: all 0.3s var(--ease-spring);
+  transition: all 0.2s var(--ease-smooth);
 }
 
 .dropdown-enter-from {
   opacity: 0;
-  transform: translateY(-10px) scale(0.95);
+  transform: translateY(-4px);
 }
 
 .dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-10px) scale(0.95);
+  transform: translateY(-4px);
 }
 </style>
