@@ -377,12 +377,34 @@ npm run tauri dev
 
 ### 📦 打包发布
 
+#### Windows
 ```bash
-cd apps/tauri
-npm run tauri build
+.\build.bat
+```
+
+#### Linux
+```bash
+chmod +x build-linux.sh
+./build-linux.sh
+```
+
+#### macOS
+```bash
+chmod +x build-macos.sh
+./build-macos.sh
+```
+
+#### 通用脚本（自动检测平台）
+```bash
+chmod +x build.sh
+./build.sh          # 自动检测平台
+./build.sh linux    # 指定 Linux
+./build.sh macos    # 指定 macOS
 ```
 
 构建产物将输出到 `apps/tauri/src-tauri/target/release/bundle/`
+
+详细构建说明请参考: [BUILD_GUIDE.md](BUILD_GUIDE.md) 或 [docs/building.md](docs/building.md)
 
 ### 🧪 运行测试
 
