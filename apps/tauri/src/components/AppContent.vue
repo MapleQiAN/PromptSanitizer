@@ -255,7 +255,7 @@ const message = useMessage();
 let invokeFn: typeof import("@tauri-apps/api/core").invoke | null = null;
 let initPromise: Promise<void> | null = null;
 
-// 初始化 Tauri API（只初始化一次）
+// 初始化 Tauri API（只初始化一次，不阻塞渲染）
 const initTauri = async () => {
   if (initPromise) {
     return initPromise;
@@ -264,6 +264,7 @@ const initTauri = async () => {
   initPromise = (async () => {
     try {
       if (typeof window !== "undefined") {
+        // 使用动态导入，不阻塞主线程
         const tauriApi = await import("@tauri-apps/api/core");
         invokeFn = tauriApi.invoke;
       }
@@ -272,11 +273,17 @@ const initTauri = async () => {
     }
   })();
   
+  // 不等待完成，让 UI 先渲染
   return initPromise;
 };
 
 // 安全的 invoke 包装函数
 const invoke = async <T = any>(cmd: string, args?: any): Promise<T> => {
+  // 如果还没初始化，先初始化（但不会阻塞）
+  if (!invokeFn && !initPromise) {
+    initTauri();
+  }
+  // 等待初始化完成
   if (!invokeFn) {
     await initTauri();
   }
@@ -437,13 +444,22 @@ const getRiskColor = (score: number) => {
 };
 
 onMounted(() => {
-  // 初始化 Tauri API
-  initTauri();
-  
-  // 初始化主题
+  // 初始化主题（同步操作，立即执行）
   const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches;
   theme.value = prefersDark ? "dark" : "light";
   applyTheme(theme.value, themeStyle.value);
+  
+  // 异步初始化 Tauri API（不阻塞渲染）
+  // 使用 requestIdleCallback 或 setTimeout 延迟执行，确保 UI 先渲染
+  if (window.requestIdleCallback) {
+    window.requestIdleCallback(() => {
+      initTauri();
+    });
+  } else {
+    setTimeout(() => {
+      initTauri();
+    }, 0);
+  }
 });
 
 watch(
