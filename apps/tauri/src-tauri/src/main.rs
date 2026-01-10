@@ -106,15 +106,23 @@ async fn read_file(path: String) -> Result<String, String> {
 
 fn get_sidecar_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // 生产环境：使用 Tauri 的路径解析器获取 externalBin
+    // Tauri 2.0 会将 externalBin 中的文件放在资源目录中
     if let Ok(resource_dir) = app.path().resource_dir() {
         #[cfg(target_os = "windows")]
         let exe_name = "prompt-sanitizer.exe";
         #[cfg(not(target_os = "windows"))]
         let exe_name = "prompt-sanitizer";
         
+        // Tauri 2.0 将 externalBin 文件放在资源目录的根目录
         let exe_path = resource_dir.join(exe_name);
         if exe_path.exists() {
             return Ok(exe_path);
+        }
+        
+        // 也尝试从 bin 子目录查找（如果 Tauri 放在那里）
+        let bin_path = resource_dir.join("bin").join(exe_name);
+        if bin_path.exists() {
+            return Ok(bin_path);
         }
     }
 
