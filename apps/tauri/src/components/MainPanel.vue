@@ -49,6 +49,7 @@
     <!-- Action Bar -->
     <div
       v-if="text"
+      class="main-panel-action-bar"
       style="
         margin-top: 16px;
         padding-top: 16px;

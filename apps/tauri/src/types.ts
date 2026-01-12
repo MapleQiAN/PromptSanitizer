@@ -33,3 +33,20 @@ export interface Response {
   risk_score: number;
   version: string;
 }
+
+export interface TextBoundingBox {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  text: string;
+  confidence: number;
+}
+
+export interface ImageFinding {
+  type: string;
+  text: string;
+  bbox: TextBoundingBox;
+  confidence: number;
+  risk: number;
+}

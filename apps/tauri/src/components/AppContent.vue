@@ -83,13 +83,6 @@
         </button>
         <button
           class="view-switcher__btn"
-          :class="{ 'view-switcher__btn--active': viewMode === 'diff' }"
-          @click="viewMode = 'diff'"
-        >
-          {{ lang === 'zh' ? '对比' : 'Diff' }}
-        </button>
-        <button
-          class="view-switcher__btn"
           :class="{ 'view-switcher__btn--active': viewMode === 'report' }"
           @click="viewMode = 'report'"
         >
@@ -114,7 +107,7 @@
          MAIN CONTENT AREA
          ============================================ -->
     <main class="app-shell__main">
-      <!-- Split View: Original + Sanitized -->
+      <!-- Split View: Original + Sanitized (Text or Image) -->
       <template v-if="viewMode === 'split'">
         <div class="panel">
           <div class="panel__header">
@@ -123,19 +116,30 @@
               <button class="btn-action" @click="handleLoadFile" style="width: auto; white-space: nowrap;">
                 {{ t.loadFile }}
               </button>
+              <button class="btn-action" @click="handleLoadImage" style="width: auto; white-space: nowrap;">
+                {{ lang === 'zh' ? '📷 加载图片' : '📷 Load Image' }}
+              </button>
               <button class="btn-action btn-action--primary" @click="handleSanitize" style="width: auto; white-space: nowrap;">
                 {{ t.executeSanitize }}
               </button>
             </div>
           </div>
           <div class="panel__body">
+            <!-- Text Mode -->
             <MainPanel
+              v-if="!isImageMode"
               title="Original"
               :text="originalText"
               :onChange="setOriginalText"
               :findings="findings"
               :highlightMode="config.mode === 'annotate'"
               :fontSize="config.fontSize || 16"
+            />
+            <!-- Image Mode -->
+            <ImagePanel
+              v-else
+              :lang="lang"
+              @maskedImage="handleMaskedImage"
             />
           </div>
         </div>
@@ -146,42 +150,33 @@
             <div class="panel__header-actions"></div>
           </div>
           <div class="panel__body">
+            <!-- Text Mode -->
             <MainPanel
+              v-if="!isImageMode"
               title="Sanitized"
               :text="sanitizedText"
               :readOnly="true"
               :findings="findings"
               :fontSize="config.fontSize || 16"
             />
+            <!-- Image Mode -->
+            <div v-else style="display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; padding: 20px;">
+              <div v-if="!maskedImageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted);">
+                <div style="font-size: 48px; opacity: 0.2; margin-bottom: 12px;">✨</div>
+                <div style="font-family: var(--font-display); font-size: 14px; font-weight: 600;">
+                  {{ lang === 'zh' ? '在左侧检测并应用打码' : 'Detect and apply mask on the left' }}
+                </div>
+              </div>
+              <img
+                v-else
+                :src="maskedImageUrl"
+                alt="Masked"
+                style="max-width: 100%; max-height: 100%; object-fit: contain;"
+              />
+            </div>
           </div>
         </div>
       </template>
-
-      <!-- Diff View -->
-      <div v-if="viewMode === 'diff'" class="panel" style="flex: 1;">
-        <div class="panel__header">
-          <h2 class="panel__title">{{ t.comparison }}</h2>
-        </div>
-        <div class="panel__body">
-          <div style="display: grid; grid-template-columns: 1fr 4px 1fr; gap: 20px; height: 100%;">
-            <div style="display: flex; flex-direction: column;">
-              <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 12px; font-family: var(--font-display);">
-                {{ t.before }}
-              </div>
-              <pre class="text-editor" readonly :style="{ flex: 1, fontSize: `${config.fontSize || 16}px` }">{{ originalText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
-            </div>
-            
-            <div style="width: 4px; background: linear-gradient(to bottom, transparent, var(--color-primary) 50%, transparent); opacity: 0.3; border-radius: var(--radius-full);"></div>
-            
-            <div style="display: flex; flex-direction: column;">
-              <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 12px; font-family: var(--font-display);">
-                {{ t.after }}
-              </div>
-              <pre class="text-editor" readonly :style="{ flex: 1, fontSize: `${config.fontSize || 16}px` }">{{ sanitizedText || `(${lang === 'zh' ? '空' : 'Empty'})` }}</pre>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Report View -->
       <div v-if="viewMode === 'report' && response" class="panel" style="flex: 1;">
@@ -205,6 +200,7 @@
           </div>
         </div>
       </div>
+
     </main>
 
     <!-- ============================================
@@ -246,6 +242,7 @@ import MainPanel from "./MainPanel.vue";
 import ConfigPanel from "./ConfigPanel.vue";
 import FindingsList from "./FindingsList.vue";
 import ReportView from "./ReportView.vue";
+import ImagePanel from "./ImagePanel.vue";
 import CustomSelect from "./CustomSelect.vue";
 import type { Config, Finding, Response } from "../types";
 
@@ -388,7 +385,9 @@ const config = ref<Config>({
   fontSize: 16,
 });
 // 配置面板始终显示，不再需要 showConfig
-const viewMode = ref<"split" | "diff" | "report">("split");
+const viewMode = ref<"split" | "report">("split");
+const isImageMode = ref(false);
+const maskedImageUrl = ref<string>("");
 const theme = ref<"dark" | "light">("light");
 const filterCategory = ref<string>("all");
 const sidebarCollapsed = ref(false);
@@ -479,6 +478,11 @@ const setConfig = (newConfig: Config) => {
 };
 
 const handleSanitize = async () => {
+  if (isImageMode.value) {
+    message.info(lang.value === "zh" ? "图片模式下请使用左侧的检测和打码功能" : "In image mode, please use the detect and mask functions on the left");
+    return;
+  }
+
   if (!originalText.value.trim()) {
     message.warning(lang.value === "zh" ? "请输入要净化的文本" : "Please input text to sanitize");
     return;
@@ -508,6 +512,7 @@ const handleSanitize = async () => {
 
 const handleLoadFile = async () => {
   try {
+    isImageMode.value = false;
     const filePath = await invoke<string>("open_file_dialog");
     if (filePath) {
       const content = await invoke<string>("read_file", { path: filePath });
@@ -518,5 +523,18 @@ const handleLoadFile = async () => {
     console.error("Failed to load file:", error);
     message.error(lang.value === "zh" ? `文件加载失败: ${error}` : `Failed to load file: ${error}`);
   }
+};
+
+const handleLoadImage = () => {
+  isImageMode.value = true;
+  originalText.value = "";
+  sanitizedText.value = "";
+  findings.value = [];
+  response.value = null;
+  maskedImageUrl.value = "";
+};
+
+const handleMaskedImage = (url: string) => {
+  maskedImageUrl.value = url;
 };
 </script>
