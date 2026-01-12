@@ -402,6 +402,22 @@ chmod +x build.sh
 ./build.sh macos    # 指定 macOS
 ```
 
+#### 从 Windows 交叉编译
+```bash
+# Linux (推荐使用 WSL)
+.\build-linux-wsl.bat
+
+# Linux (原生交叉编译，需要额外配置)
+.\build-cross-windows.bat linux
+
+# macOS (几乎不可行，建议在 macOS 上构建)
+.\build-cross-windows.bat macos
+```
+
+> ⚠️ **注意**: 
+> - Linux 交叉编译: ✅ 可行，推荐使用 WSL (`build-linux-wsl.bat`)
+> - macOS 交叉编译: ❌ **几乎不可行**，需要 macOS SDK（Windows 上不可用），强烈建议在 macOS 上构建
+
 构建产物将输出到 `apps/tauri/src-tauri/target/release/bundle/`
 
 详细构建说明请参考: [BUILD_GUIDE.md](BUILD_GUIDE.md) 或 [docs/building.md](docs/building.md)
