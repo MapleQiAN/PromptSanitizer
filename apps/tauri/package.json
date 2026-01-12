@@ -13,8 +13,9 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
-    "vue": "^3.4.0",
-    "naive-ui": "^2.38.1"
+    "naive-ui": "^2.38.1",
+    "tesseract.js": "^7.0.0",
+    "vue": "^3.4.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0",

@@ -112,14 +112,21 @@
         <div class="panel">
           <div class="panel__header">
             <h2 class="panel__title">{{ t.originalText }}</h2>
-            <div class="panel__header-actions">
-              <button class="btn-action" @click="handleLoadFile" style="width: auto; white-space: nowrap;">
-                {{ t.loadFile }}
-              </button>
-              <button class="btn-action" @click="handleLoadImage" style="width: auto; white-space: nowrap;">
-                {{ lang === 'zh' ? '📷 加载图片' : '📷 Load Image' }}
-              </button>
-              <button class="btn-action btn-action--primary" @click="handleSanitize" style="width: auto; white-space: nowrap;">
+            <div class="panel__header-actions" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <div style="display: flex; gap: 8px; align-items: center; padding-right: 16px; margin-right: 8px; border-right: 2px solid var(--color-border-light);">
+                <button class="btn-action" @click="handleLoadFile" style="width: auto; white-space: nowrap; padding: 8px 16px;">
+                  {{ t.loadFile }}
+                </button>
+                <button class="btn-action" @click="handleLoadImage" style="width: auto; white-space: nowrap; padding: 8px 16px;">
+                  {{ lang === 'zh' ? '📷 加载图片' : '📷 Load Image' }}
+                </button>
+              </div>
+              <button 
+                v-if="!isImageMode"
+                class="btn-action btn-action--primary" 
+                @click="handleSanitize" 
+                style="width: auto; white-space: nowrap; padding: 8px 20px;"
+              >
                 {{ t.executeSanitize }}
               </button>
             </div>
@@ -160,18 +167,21 @@
               :fontSize="config.fontSize || 16"
             />
             <!-- Image Mode -->
-            <div v-else style="display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; padding: 20px;">
-              <div v-if="!maskedImageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted);">
-                <div style="font-size: 48px; opacity: 0.2; margin-bottom: 12px;">✨</div>
-                <div style="font-family: var(--font-display); font-size: 14px; font-weight: 600;">
-                  {{ lang === 'zh' ? '在左侧检测并应用打码' : 'Detect and apply mask on the left' }}
+            <div v-else style="display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; padding: 24px; overflow: auto;">
+              <div v-if="!maskedImageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted); padding: 40px 20px;">
+                <div style="font-size: 64px; opacity: 0.15; margin-bottom: 16px;">✨</div>
+                <div style="font-family: var(--font-display); font-size: 15px; font-weight: 600; margin-bottom: 8px;">
+                  {{ lang === 'zh' ? '等待打码处理' : 'Waiting for masking' }}
+                </div>
+                <div style="font-size: 13px; opacity: 0.7;">
+                  {{ lang === 'zh' ? '在左侧检测文本并应用打码后，结果将显示在这里' : 'After detecting text and applying mask on the left, the result will appear here' }}
                 </div>
               </div>
               <img
                 v-else
                 :src="maskedImageUrl"
                 alt="Masked"
-                style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--radius-sm); box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
               />
             </div>
           </div>

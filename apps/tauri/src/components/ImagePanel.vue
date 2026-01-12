@@ -1,7 +1,7 @@
 <template>
-  <div style="display: flex; flex-direction: column; height: 100%; gap: 12px;">
+  <div style="display: flex; flex-direction: column; height: 100%; gap: 16px;">
     <!-- Upload and Control Section -->
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <div style="display: flex; flex-direction: column; gap: 12px;">
       <input
         ref="fileInputRef"
         type="file"
@@ -9,78 +9,89 @@
         @change="handleFileSelect"
         style="display: none;"
       />
-      <button class="btn-action" @click="triggerFileSelect" style="width: auto; white-space: nowrap;">
-        📁 {{ lang === 'zh' ? '选择图片' : 'Select Image' }}
-      </button>
-      <button
-        v-if="imageFile"
-        class="btn-action"
-        @click="handleDetectText"
-        :disabled="isProcessing"
-        style="width: auto; white-space: nowrap;"
-      >
-        {{ isProcessing ? '⏳' : '🔍' }} {{ isProcessing ? (lang === 'zh' ? '检测中...' : 'Detecting...') : (lang === 'zh' ? '检测文本' : 'Detect Text') }}
-      </button>
-      <button
-        v-if="imageFile && detectedFindings.length > 0"
-        class="btn-action btn-action--primary"
-        @click="handleApplyMask"
-        :disabled="isProcessing"
-        style="width: auto; white-space: nowrap;"
-      >
-        🎨 {{ lang === 'zh' ? '应用打码' : 'Apply Mask' }}
-      </button>
-      <button
-        v-if="maskedImageUrl"
-        class="btn-action"
-        @click="handleDownload"
-        style="width: auto; white-space: nowrap;"
-      >
-        💾 {{ lang === 'zh' ? '下载' : 'Download' }}
-      </button>
+      <!-- Action Buttons Row -->
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button class="btn-action" @click="triggerFileSelect" style="width: auto; white-space: nowrap; padding: 8px 16px;">
+          📁 {{ lang === 'zh' ? '选择图片' : 'Select Image' }}
+        </button>
+        <button
+          v-if="imageFile"
+          class="btn-action"
+          @click="handleDetectText"
+          :disabled="isProcessing"
+          style="width: auto; white-space: nowrap; padding: 8px 16px;"
+        >
+          {{ isProcessing ? '⏳' : '🔍' }} {{ isProcessing ? (lang === 'zh' ? '检测中...' : 'Detecting...') : (lang === 'zh' ? '检测文本' : 'Detect Text') }}
+        </button>
+        <button
+          v-if="imageFile && detectedFindings.length > 0"
+          class="btn-action btn-action--primary"
+          @click="handleApplyMask"
+          :disabled="isProcessing"
+          style="width: auto; white-space: nowrap; padding: 8px 20px;"
+        >
+          🎨 {{ lang === 'zh' ? '应用打码' : 'Apply Mask' }}
+        </button>
+        <button
+          v-if="maskedImageUrl"
+          class="btn-action"
+          @click="handleDownload"
+          style="width: auto; white-space: nowrap; padding: 8px 16px; margin-left: auto;"
+        >
+          💾 {{ lang === 'zh' ? '下载图片' : 'Download Image' }}
+        </button>
+      </div>
     </div>
 
     <!-- Image Display Area -->
-    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: auto; background: var(--color-bg-tertiary); border: 3px solid var(--color-border); border-radius: var(--radius-md); position: relative; min-height: 0;">
-      <div v-if="!imageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted);">
-        <div style="font-size: 48px; opacity: 0.2; margin-bottom: 12px;">🖼️</div>
-        <div style="font-family: var(--font-display); font-size: 14px; font-weight: 600;">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; overflow: auto; background: var(--color-bg-tertiary); border: 3px solid var(--color-border); border-radius: var(--radius-md); position: relative; min-height: 0;">
+      <div v-if="!imageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted); padding: 40px 20px;">
+        <div style="font-size: 64px; opacity: 0.15; margin-bottom: 16px;">🖼️</div>
+        <div style="font-family: var(--font-display); font-size: 15px; font-weight: 600; margin-bottom: 8px;">
           {{ lang === 'zh' ? '请选择一张图片' : 'Please select an image' }}
         </div>
+        <div style="font-size: 13px; opacity: 0.7;">
+          {{ lang === 'zh' ? '支持 JPG、PNG 等常见图片格式' : 'Supports JPG, PNG and other common image formats' }}
+        </div>
       </div>
-      <div v-else style="position: relative; max-width: 100%; max-height: 100%;">
+      <div v-else style="position: relative; max-width: 100%; max-height: 100%; display: flex; align-items: center; justify-content: center;">
         <img
           ref="imageRef"
           :src="imageUrl"
           alt="Image"
-          style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"
+          style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; border-radius: var(--radius-sm);"
           @load="handleImageLoad"
         />
         <canvas
           ref="overlayCanvasRef"
-          style="position: absolute; top: 0; left: 0; pointer-events: none;"
+          style="position: absolute; top: 0; left: 0; pointer-events: none; border-radius: var(--radius-sm);"
         ></canvas>
       </div>
     </div>
 
     <!-- Findings List -->
-    <div v-if="detectedFindings.length > 0" style="max-height: 120px; overflow-y: auto; padding: 12px; background: var(--color-bg-secondary); border: 3px solid var(--color-border); border-radius: var(--radius-md);">
-      <div style="font-family: var(--font-display); font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--color-text-secondary);">
-        {{ lang === 'zh' ? '检测到的敏感信息' : 'Detected Sensitive Info' }} ({{ detectedFindings.length }})
+    <div v-if="detectedFindings.length > 0" style="max-height: 140px; overflow-y: auto; padding: 16px; background: var(--color-bg-secondary); border: 3px solid var(--color-border); border-radius: var(--radius-md);">
+      <div style="font-family: var(--font-display); font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-secondary); display: flex; align-items: center; gap: 8px;">
+        <span>🔍</span>
+        <span>{{ lang === 'zh' ? '检测到的敏感信息' : 'Detected Sensitive Info' }}</span>
+        <span style="background: var(--color-primary); color: #FFFFFF; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 700;">
+          {{ detectedFindings.length }}
+        </span>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
         <div
           v-for="(finding, index) in detectedFindings"
           :key="index"
           :style="{
-            padding: '6px 10px',
+            padding: '8px 12px',
             background: getRiskColor(finding.risk),
             color: '#FFFFFF',
             borderRadius: 'var(--radius-sm)',
-            fontSize: '11px',
+            fontSize: '12px',
             fontFamily: 'var(--font-mono)',
             cursor: 'pointer',
             transition: 'all 0.2s',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }"
           @mouseenter="highlightFinding(index)"
           @mouseleave="clearHighlight"
