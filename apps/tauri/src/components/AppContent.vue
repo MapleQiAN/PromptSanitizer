@@ -115,8 +115,8 @@
             <div class="panel__header-actions" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
               <div style="display: flex; gap: 8px; align-items: center; padding-right: 16px; margin-right: 8px; border-right: 2px solid var(--color-border-light);">
                 <button class="btn-action" @click="handleLoadFile" style="width: auto; white-space: nowrap; padding: 8px 16px;">
-                  {{ t.loadFile }}
-                </button>
+                {{ t.loadFile }}
+              </button>
                 <button class="btn-action" @click="handleLoadImage" style="width: auto; white-space: nowrap; padding: 8px 16px;">
                   {{ lang === 'zh' ? '📷 加载图片' : '📷 Load Image' }}
                 </button>
@@ -145,6 +145,7 @@
             <!-- Image Mode -->
             <ImagePanel
               v-else
+              ref="imagePanelRef"
               :lang="lang"
               @maskedImage="handleMaskedImage"
             />
@@ -167,11 +168,18 @@
               :fontSize="config.fontSize || 16"
             />
             <!-- Image Mode -->
-            <div v-else style="display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; padding: 24px; overflow: auto;">
-              <div v-if="!maskedImageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted); padding: 40px 20px;">
-                <div style="font-size: 64px; opacity: 0.15; margin-bottom: 16px;">✨</div>
+            <div 
+              v-else 
+              style="display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; padding: 24px; overflow: auto; transition: all 0.3s ease;"
+              :style="isRightPanelDragging ? { backgroundColor: 'var(--color-bg-secondary)' } : {}"
+              @dragover.prevent="handleRightPanelDragOver"
+              @dragleave.prevent="handleRightPanelDragLeave"
+              @drop.prevent="handleRightPanelDrop"
+            >
+              <div v-if="!maskedImageUrl" class="empty-state" style="text-align: center; color: var(--color-text-muted); padding: 40px 20px; width: 100%;">
+                <div style="font-size: 64px; opacity: 0.15; margin-bottom: 16px; transition: transform 0.3s ease;" :style="isRightPanelDragging ? { transform: 'scale(1.1)', opacity: '0.3' } : {}">✨</div>
                 <div style="font-family: var(--font-display); font-size: 15px; font-weight: 600; margin-bottom: 8px;">
-                  {{ lang === 'zh' ? '等待打码处理' : 'Waiting for masking' }}
+                  {{ isRightPanelDragging ? (lang === 'zh' ? '松开鼠标以加载图片' : 'Release to load image') : (lang === 'zh' ? '等待打码处理或拖拽图片' : 'Waiting for masking or drag image') }}
                 </div>
                 <div style="font-size: 13px; opacity: 0.7;">
                   {{ lang === 'zh' ? '在左侧检测文本并应用打码后，结果将显示在这里' : 'After detecting text and applying mask on the left, the result will appear here' }}
@@ -398,6 +406,8 @@ const config = ref<Config>({
 const viewMode = ref<"split" | "report">("split");
 const isImageMode = ref(false);
 const maskedImageUrl = ref<string>("");
+const isRightPanelDragging = ref(false);
+const imagePanelRef = ref<InstanceType<typeof ImagePanel> | null>(null);
 const theme = ref<"dark" | "light">("light");
 const filterCategory = ref<string>("all");
 const sidebarCollapsed = ref(false);
@@ -546,5 +556,47 @@ const handleLoadImage = () => {
 
 const handleMaskedImage = (url: string) => {
   maskedImageUrl.value = url;
+};
+
+const handleRightPanelDragOver = (event: DragEvent) => {
+  event.preventDefault();
+  if (!isRightPanelDragging.value) {
+    isRightPanelDragging.value = true;
+  }
+};
+
+const handleRightPanelDragLeave = (event: DragEvent) => {
+  event.preventDefault();
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = event.clientX;
+  const y = event.clientY;
+  
+  if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+    isRightPanelDragging.value = false;
+  }
+};
+
+const handleRightPanelDrop = (event: DragEvent) => {
+  event.preventDefault();
+  isRightPanelDragging.value = false;
+  
+  const files = event.dataTransfer?.files;
+  if (files && files.length > 0) {
+    const file = files[0];
+    if (file.type.startsWith("image/")) {
+      // 切换到图片模式
+      if (!isImageMode.value) {
+        handleLoadImage();
+      }
+      // 使用 ImagePanel 的方法来处理文件
+      setTimeout(() => {
+        if (imagePanelRef.value && (imagePanelRef.value as any).processImageFile) {
+          (imagePanelRef.value as any).processImageFile(file);
+        }
+      }, 100);
+    } else {
+      message.warning(lang.value === "zh" ? "请拖入有效的图片文件" : "Please drag a valid image file");
+    }
+  }
 };
 </script>
